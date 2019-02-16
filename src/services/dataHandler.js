@@ -1,11 +1,27 @@
 class dataHandler{
     constructor(pdata){
-        var data = pdata
+        this.data = pdata
     }
 
-    getGroups(data){
+    getColumns(){
+        var columns = [];
+
+        for (var el in this.data[0]){
+            if(el !== "" && el !== "↵"){
+                columns.push(el);
+            }
+        }
+        console.log(columns);
+        return columns;
+        
+    }
+
+    getGroups(){
         console.log("calculting groups...")
-        console.log(this.state.data)
+        //console.log(this.data)
+
+        //var groups = [];
+        
     }
 }
 

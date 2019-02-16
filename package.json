@@ -3,10 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "js-file-download": "^0.4.4",
     "react": "^16.8.2",
     "react-csv-reader": "^1.2.2",
     "react-dom": "^16.8.2",
-    "react-scripts": "2.1.5"
+    "react-scripts": "2.1.5",
+    "react-table": "^6.9.2"
   },
   "scripts": {
     "start": "react-scripts start",
