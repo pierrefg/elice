@@ -4,11 +4,15 @@ class dataHandler{
     }
 
     getColumns(){
-        var columns = [];
+        var columns = {};
 
         for (var el in this.data[0]){
             if(el !== "" && el !== "↵"){
-                columns.push(el);
+                let temp = {
+                    state: "ignore", //default/vow/ignore(will not be used)
+                    vowNum: -1
+                }
+                columns[el] = temp;
             }
         }
         console.log(columns);

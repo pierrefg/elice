@@ -1,23 +1,39 @@
 import React, { Component } from 'react';
 
+import "./vows.css"
+
 class Vows extends Component {
     render() {
         return (
         <div>
             <h2> Voeux </h2>
-
-            Combien de voeux possibles ?
-            {console.log(this.props.vows)}
-            <button onClick={() => this.props.changeVowsNumber(false)}>-</button>
-            {this.props.vows.length}
-            <button onClick={() => this.props.changeVowsNumber(true)}>+</button>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Colonnes</th>
+                        <th>Mode</th>
+                    </tr>
+                </thead>
+                <tbody>
+            {
+                Object.keys(this.props.columns).map((el) => {
+                    var temp =  <tr key={el}>
+                                    <td>{el}</td>
+                                    <td><select id={el} 
+                                                onChange={(e) => this.props.changeValue(e)} 
+                                                value = {this.props.columns[el].state}>
+                                        <option value="default">Defaut</option>
+                                        <option value="ignore">Ignorer</option>
+                                        <option value="vow">Voeu</option>
+                                    </select></td>
+                                </tr>
+                    return temp
+                })
+            }
+                </tbody>
+            </table>
             <br />
-            <select>
-                <option value="volvo">Volvo</option>
-                <option value="saab">Saab</option>
-                <option value="mercedes">Mercedes</option>
-                <option value="audi">Audi</option>
-            </select>
+            <button>Suite</button>
         </div>
         );
     }

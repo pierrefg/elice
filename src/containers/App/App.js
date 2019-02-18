@@ -5,8 +5,10 @@ import Vows from '../../components/Vows/Vows'
 import Groups from '../../components/Groups/Groups'
 import Affectations from '../../components/Affectations/Affectations'
 import dataHandler from '../../services/dataHandler'
+import reactTableUtil from '../../services/reactTableUtil'
 
 import CSVReader from 'react-csv-reader'
+import Container from 'react-bootstrap/Container'
 
 
 class App extends Component {
@@ -17,7 +19,8 @@ class App extends Component {
       vows: [],
       columns : [],
       groups : [],
-      students : []
+      students : [],
+      rtColumns: []
     }
   }
 
@@ -25,7 +28,7 @@ class App extends Component {
     let dataH = new dataHandler(data);
     dataH.getGroups();
     var cols = dataH.getColumns();
-
+    console.log(data[0]["Classement_voeux [1]"]);
     this.setState({
         columns : cols,
         groups : ["Hilaire","JB","Alex"],
@@ -35,6 +38,23 @@ class App extends Component {
 
   handleDataError(e){
     console.log("error")
+  }
+
+  changeValue(e){
+    let value = e.target.value
+    let key = e.target.id
+    console.log("valeur : "+e.target.value);
+    console.log("key : "+e.target.id);
+    this.state.columns[key].state=value
+    this.setState({
+      columns: this.state.columns
+    })
+
+    let rTable = new reactTableUtil()
+    this.setState({
+      rtColumns: rTable.columnParser(this.state.columns)
+    })
+    
   }
 
   loadState(){
@@ -47,34 +67,13 @@ class App extends Component {
     fileDownload(data, 'state.json');
   }
 
-  changeVowsNumber(add){
-    if(add){
-      console.log("ici : " + this.state.columns.length)
-      if(this.state.columns.length>0){
-        console.log("J'ajoute !")
-        this.state.vows.push(this.state.columns[0])
-        this.setState({
-          vows :  this.state.vows
-        })
-      }
-    }else{
-      if(this.state.vows.length > 0){
-        console.log("Je retire...")
-        this.state.vows.pop()
-        this.setState({
-          vows : this.state.vows
-        })
-      }
-    }
-    this.setState();
-  }
-
   render() {
     return (
-      <div className="App">
+      <Container>
         <h1>Ventilation</h1>
-        <span>Load state </span><input type="file"/>
+        {/*<span>Load state </span><input type="file"/>
         <span>Save state </span><button onClick={this.saveState.bind(this)}>Save state</button>
+        */}
         <CSVReader
                 cssClass="csv-reader-input"
                 //label="Select CSV"
@@ -83,10 +82,10 @@ class App extends Component {
                 parserOptions={{header: true, encoding: "UTF-8"}}
                 inputId="limeSurvey"
         />
-        <Vows vows={this.state.vows} changeVowsNumber = {this.changeVowsNumber.bind(this)} columns = {this.state.columns}/>
+        <Vows vows={this.state.vows} changeValue = {this.changeValue.bind(this)} columns = {this.state.columns}/>
         <Groups groups = {this.state.groups} /*loadData = {this.loadData.bind(this)}*//>
-        <Affectations columns = {this.state.columns} students = {this.state.students} />
-      </div>
+        <Affectations students = {this.state.students} rtColumns = {this.state.rtColumns}/>
+      </Container>
     );
   }
 }

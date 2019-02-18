@@ -12,7 +12,7 @@ class Affectations extends Component {
         }
         <ReactTable
           data={this.props.students}
-          columns={this.props.columns}
+          columns={this.props.rtColumns}
           defaultPageSize={10}
           className="-striped -highlight"
         />
