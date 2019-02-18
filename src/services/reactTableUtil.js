@@ -1,35 +1,54 @@
+import cellEditFactory, { Type } from 'react-bootstrap-table2-editor';
+
 class reactTableUtil{
     constructor(pdata){
         this.data = pdata
     }
 
-    columnParser(cols){
+    columnParser(cols, groups){
         let result = []
-        let vows = {
-            Header:"Voeux",
-            columns:[]
-        }
         for(var el in cols){
             let temp = cols[el]
             if(temp.state !== "ignore"){
-                if(temp.state==="vow"){
-                    vows.columns.push({
-                        Header: el,
-                        accessor: el
-                    })
-                }else if(temp.state==="default"){
+                if(temp.state === "vow"){
                     result.push({
-                        Header: el,
-                        accessor: el
+                        dataField: el,
+                        text: "Voeu" + temp.vowNum,
+                        sort: true
+                    })
+                }else{
+                    result.push({
+                        dataField: el,
+                        text: el,
+                        sort: true
                     })
                 }
+            }else{
+                result.push({
+                    dataField: el,
+                    text: el,
+                    hidden: true
+                })
             }
         }
-        result.push(vows)
-        console.log("RESULT")
-        console.log(result)
+        var optionsAffec = []
+        for(var i in groups){
+            optionsAffec.push({
+                value:i,
+                label:i
+            })
+        }
+        result.push({
+            dataField: 'affecMode',
+            text: "Mode d'affectation",
+            editor: {
+                    type: Type.SELECT,
+                    options: optionsAffec
+                    }
+            })
         return result
     }
+
 }
 
 export default reactTableUtil;
