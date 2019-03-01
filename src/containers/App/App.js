@@ -10,6 +10,7 @@ import reactTableUtil from '../../services/reactTableUtil'
 import CSVReader from 'react-csv-reader'
 import Container from 'react-bootstrap/Container'
 import Jumbotron from 'react-bootstrap/Jumbotron'
+import {Row,Col} from 'react-bootstrap'
 
 
 class App extends Component {
@@ -35,7 +36,7 @@ class App extends Component {
 
     this.setState({
         columns : cols,
-        groups : ["Hilaire","JB","Alex"],
+        groups : [],
         students : data,
         rtColumns: this.rTable.columnParser(cols, this.state.groups)
     })
@@ -92,8 +93,14 @@ class App extends Component {
                 inputId="limeSurvey"
         />
         </Jumbotron>
-        <Vows vowNumber={this.state.vowNumber} changeValue = {this.changeValue.bind(this)} columns = {this.state.columns}/>
-        <Groups groups = {this.state.groups} /*loadData = {this.loadData.bind(this)}*//>
+        <Row>
+          <Col>
+          <Vows vowNumber={this.state.vowNumber} changeValue = {this.changeValue.bind(this)} columns = {this.state.columns}/>
+          </Col><Col>
+          <Groups groups = {this.state.groups} /*loadData = {this.loadData.bind(this)}*//>
+          </Col>
+        </Row>
+        <hr />
         <Affectations students = {this.state.students} rtColumns = {this.state.rtColumns}/>
       </Container>
     );

@@ -1,4 +1,4 @@
-import cellEditFactory, { Type } from 'react-bootstrap-table2-editor';
+import { Type } from 'react-bootstrap-table2-editor';
 
 class reactTableUtil{
     constructor(pdata){
@@ -24,11 +24,11 @@ class reactTableUtil{
                     })
                 }
             }else{
-                result.push({
+                /*result.push({
                     dataField: el,
                     text: el,
                     hidden: true
-                })
+                })*/
             }
         }
         var optionsAffec = []

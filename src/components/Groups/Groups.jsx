@@ -6,9 +6,9 @@ class Groups extends Component {
         <div>
             <h2> Groupes </h2>
 
-            {/*this.props.groups.map(function(el){
+            {Object.keys(this.props.groups).map(function(el){
                 return <GroupTile key={el} name={el}/>;
-            })*/}
+            })}
         </div>
         );
     }
@@ -18,7 +18,7 @@ class GroupTile extends Component {
     render() {
         return (
             <div>
-              Mon nom est {this.props.name} !
+              {this.props.name}
             </div>
         );
     }
