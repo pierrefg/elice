@@ -1,5 +1,5 @@
 class dataHandler{
-    preProcess(data){ //brackets, new columns
+    static preProcess(data){ //brackets, new columns
         for(var row in data){
             for(var el in data[row]){
                 var temp = el.replace("[", "{");
@@ -16,7 +16,7 @@ class dataHandler{
     }
 
 
-    getColumns(data){
+    static getColumns(data){
         var columns = {};
 
         for (var el in data[0]){
@@ -33,7 +33,7 @@ class dataHandler{
         
     }
 
-    getGroups(data, columns){
+    static getGroups(data, columns){
         var groups = {}
         var vowAtts = []
         //Get the columns set as Vow Columns by the user
@@ -65,7 +65,7 @@ class dataHandler{
         return groups
     }
 
-    createIds(data){
+    static createIds(data){
         var i =0;
         for(var el in data){
             data[el].idVent = i;

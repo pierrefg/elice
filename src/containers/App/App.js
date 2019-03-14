@@ -18,9 +18,6 @@ class App extends Component {
   constructor(){
     super();
 
-    this.dataH = new dataHandler();
-    this.rTable = new reactTableUtil()
-
     this.state = {
       vowsNumber: 0,
       columns : [],
@@ -34,15 +31,15 @@ class App extends Component {
   }
 
   handleData(data){
-    data = this.dataH.preProcess(data);
-    data = this.dataH.createIds(data);
-    var cols = this.dataH.getColumns(data);
+    data = dataHandler.preProcess(data);
+    data = dataHandler.createIds(data);
+    var cols = dataHandler.getColumns(data);
 
     this.setState({
         columns : cols,
         groups : [],
         students : data,
-        rtColumns: this.rTable.columnParser(cols, this.state.groups)
+        rtColumns: reactTableUtil.columnParser(cols, this.state.groups)
     })
   }
 
@@ -64,9 +61,9 @@ class App extends Component {
     this.state.columns[key].state=value
     this.setState({
       columns: this.state.columns,
-      rtColumns: this.rTable.columnParser(this.state.columns, this.state.groups),
+      rtColumns: reactTableUtil.columnParser(this.state.columns, this.state.groups),
       vowNumber: this.state.vowsNumber,
-      groups:this.dataH.getGroups(this.state.students, this.state.columns)
+      groups: dataHandler.getGroups(this.state.students, this.state.columns)
     })
   }
 

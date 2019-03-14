@@ -1,11 +1,7 @@
 import { Type } from 'react-bootstrap-table2-editor';
 
 class reactTableUtil{
-    constructor(pdata){
-        this.data = pdata
-    }
-
-    columnParser(cols, groups){
+    static columnParser(cols, groups){
         let result = []
         for(var el in cols){
             let temp = cols[el]
