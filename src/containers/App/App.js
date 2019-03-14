@@ -12,6 +12,7 @@ import Container from 'react-bootstrap/Container'
 import Jumbotron from 'react-bootstrap/Jumbotron'
 import {Row,Col} from 'react-bootstrap'
 
+const addon = require('../../scripts/Release/addon.node');
 
 class App extends Component {
   constructor(){
@@ -27,6 +28,9 @@ class App extends Component {
       students : [],
       rtColumns: [{dataField: 'idVent', text: 'Vide'}]
     }
+
+
+    
   }
 
   handleData(data){
@@ -80,10 +84,8 @@ class App extends Component {
     return (
       <Container fluid={true} >
         <Jumbotron>
+        {/*addon.hello()*/}
         <h1>Ventilation</h1>
-        {/*<span>Load state </span><input type="file"/>
-        <span>Save state </span><button onClick={this.saveState.bind(this)}>Save state</button>
-        */}
         <CSVReader
                 cssClass="csv-reader-input"
                 //label="Select CSV"
