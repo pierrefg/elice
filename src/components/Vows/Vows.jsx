@@ -25,7 +25,7 @@ class Vows extends Component {
 
         return (
         <div>
-            <h2> <span>Voeux  </span>
+            <h2> <span>Vœux  </span>
             <Button
                 variant="secondary"
                 onClick={() => this.setState({ open: !open })}
@@ -42,7 +42,7 @@ class Vows extends Component {
                         <tr>
                             <th>Colonnes</th>
                             <th>Mode</th>
-                            <th>Voeu n°</th>
+                            <th>Vœu n°</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -53,13 +53,13 @@ class Vows extends Component {
                                             <td><select id={el} 
                                                         onChange={(e) => this.props.changeValue(e)} 
                                                         value = {this.props.columns[el].state}>
-                                                <option value="default">Defaut</option>
+                                                <option value="default">Défaut</option>
                                                 <option value="ignore">Ignorer</option>
-                                                <option value="vow">Voeu</option>
+                                                <option value="vow">Vœu</option>
                                             </select></td>
                                             <td><select id={el} 
                                                         value = {this.props.columns[el].vowNum}>
-                                                <option value={-1}>Pas un voeu</option>
+                                                <option value={-1}>Pas un vœu</option>
                                                 {poss.map((el)=>{
                                                     return <option key={el}  value={el}>{el}</option>
                                                 })}

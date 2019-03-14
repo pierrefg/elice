@@ -13,7 +13,7 @@ class reactTableUtil{
                 if(temp.state === "vow"){
                     result.push({
                         dataField: el,
-                        text: "Voeu" + temp.vowNum,
+                        text: "Vœu " + temp.vowNum,
                         sort: true
                     })
                 }else{
