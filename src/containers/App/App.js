@@ -25,9 +25,6 @@ class App extends Component {
       students : [],
       rtColumns: [{dataField: 'idVent', text: 'Vide'}]
     }
-
-
-    
   }
 
   handleData(data){
@@ -79,10 +76,11 @@ class App extends Component {
 
   render() {
     return (
-      <Container fluid={true} >
+      <Container>
         <Jumbotron>
         {/*addon.hello()*/}
         <h1>Ventilation</h1>
+        <hr/>
         <CSVReader
                 cssClass="csv-reader-input"
                 //label="Select CSV"
@@ -99,7 +97,7 @@ class App extends Component {
           <Groups groups = {this.state.groups} /*loadData = {this.loadData.bind(this)}*//>
           </Col>
         </Row>
-        <hr />
+        <hr/>
         <Affectations students = {this.state.students} rtColumns = {this.state.rtColumns}/>
       </Container>
     );

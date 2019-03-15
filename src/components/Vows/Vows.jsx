@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import Table from 'react-bootstrap/Table'
 import Button from 'react-bootstrap/Button'
 import Collapse from 'react-bootstrap/Collapse'
+import Form from 'react-bootstrap/Form'
 
 import "./vows.css"
 
@@ -25,19 +26,20 @@ class Vows extends Component {
 
         return (
         <div>
-            <h2> <span>Vœux  </span>
+            <h2> <span>Vœux</span>
             <Button
                 variant="secondary"
                 onClick={() => this.setState({ open: !open })}
                 aria-controls="columnsTable"
                 aria-expanded={open}
+                className="ml-2"
             >
-            Toggle section
+            Afficher/Masquer
             </Button></h2>
 
             <Collapse in={this.state.open}>
-                <div id="columnsTable">
-                <Table  striped bordered hover size="sm">
+                <div id="columnsTable" className="mb-3">
+                <Table striped bordered hover>
                     <thead>
                         <tr>
                             <th>Colonnes</th>
@@ -50,20 +52,25 @@ class Vows extends Component {
                         Object.keys(this.props.columns).map((el) => {
                             var temp =  <tr key={el}>
                                             <td>{el}</td>
-                                            <td><select id={el} 
-                                                        onChange={(e) => this.props.changeValue(e)} 
-                                                        value = {this.props.columns[el].state}>
-                                                <option value="default">Défaut</option>
-                                                <option value="ignore">Ignorer</option>
-                                                <option value="vow">Vœu</option>
-                                            </select></td>
-                                            <td><select id={el} 
-                                                        value = {this.props.columns[el].vowNum}>
-                                                <option value={-1}>Pas un vœu</option>
-                                                {poss.map((el)=>{
-                                                    return <option key={el}  value={el}>{el}</option>
-                                                })}
-                                            </select></td>
+                                            <td>
+                                                <Form.Control as="select"
+                                                              id={el} 
+                                                              onChange={(e) => this.props.changeValue(e)} 
+                                                              value = {this.props.columns[el].state}>
+                                                    <option value="default">Défaut</option>
+                                                    <option value="ignore">Ignorer</option>
+                                                    <option value="vow">Vœu</option>
+                                                </Form.Control>
+                                            </td>
+                                            <td><Form.Control as="select"
+                                                              id={el} 
+                                                              value = {this.props.columns[el].vowNum}>
+                                                    <option value={-1}>Pas un vœu</option>
+                                                    {poss.map((el)=>{
+                                                        return <option key={el}  value={el}>{el}</option>
+                                                    })}
+                                                </Form.Control>
+                                            </td>
                                         </tr>
                             return temp
                         })
@@ -71,7 +78,7 @@ class Vows extends Component {
                     </tbody>
                 </Table>
                 
-                <button>Suite</button>
+                <Button variant="secondary">Suite</Button>
                 </div>
             </Collapse>
         </div>

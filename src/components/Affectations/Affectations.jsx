@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 
+import Form from 'react-bootstrap/Form';
 import BootstrapTable from 'react-bootstrap-table-next';
 import ToolkitProvider, { Search, CSVExport } from 'react-bootstrap-table2-toolkit';
 import paginationFactory from 'react-bootstrap-table2-paginator';
@@ -25,15 +26,17 @@ class Affectations extends Component {
           {
             props => (
               <div>
-                <ExportCSVButton { ...props.csvProps }>Export CSV</ExportCSVButton>
-                <SearchBar { ...props.searchProps } />
+                <ExportCSVButton className="btn-primary mb-2" { ...props.csvProps }>Export CSV</ExportCSVButton>
+                <SearchBar placeholder="Recherche..." { ...props.searchProps } />
                 <hr />
                 <BootstrapTable
+                  bootstrap4
+                  wrapperClasses="table-responsive"
                   striped
                   hover
                   condensed
                   noDataIndication="Pas de données" 
-                  pagination={ paginationFactory()}
+                  pagination={ paginationFactory( { sizePerPage: 5, hideSizePerPage: true } ) }
                   cellEdit={ cellEditFactory({ mode: 'click', blurToSave: true }) }
                   { ...props.baseProps }
                 />

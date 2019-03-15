@@ -27,7 +27,7 @@ class reactTableUtil{
                 })*/
             }
         }
-        var optionsAffec = []
+        var optionsAffec = [{value:"auto", label:"auto"}]
         for(var i in groups){
             optionsAffec.push({
                 value:i,
