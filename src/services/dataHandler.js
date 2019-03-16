@@ -36,6 +36,7 @@ class dataHandler{
     getGroups(data, columns){
         var groups = {}
         var vowAtts = []
+        //Get the columns set as Vow Columns by the user
         for(var el in columns){
             if(columns[el]["state"] === "vow"){
                 vowAtts.push(el)
@@ -43,17 +44,22 @@ class dataHandler{
         }
         console.log("GROUPS")
         console.log(vowAtts)
-        for(var rowNum in data){
+        //Find all the possible groups
+        for(var rowNum in data){ //Go through all the rows
             var row = data[rowNum]
-            for(var i in vowAtts){
+            for(var i in vowAtts){ //Go through all the vow columns
                 console.log(row[vowAtts[i]])
-               if(groups[row[vowAtts[i]]] === undefined){
-                    groups[row[vowAtts[i]]] = {
-                       "nb":1
+                if(row[vowAtts[i]]!==undefined){
+                    if(groups[row[vowAtts[i]]] === undefined){
+                        groups[row[vowAtts[i]]] = {
+                            nb:1, //Clumsy stat
+                            nbStudents : 20, //Total number of places avalaible in this groups
+                            nbReservedPlaces : 0 //Places spared for other students
+                        }
+                    }else{
+                        groups[row[vowAtts[i]]].nb++
                     }
-               }else{
-                    groups[row[vowAtts[i]]]["nb"]++
-               }
+                }
             }
         }
         return groups
