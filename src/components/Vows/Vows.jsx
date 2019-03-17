@@ -39,7 +39,7 @@ class Vows extends Component {
 
             <Collapse in={this.state.open}>
                 <div id="columnsTable" className="mb-3">
-                <Table striped bordered hover>
+                <Table striped bordered hover size="sm">
                     <thead>
                         <tr>
                             <th>Colonnes</th>
@@ -56,7 +56,8 @@ class Vows extends Component {
                                                 <Form.Control as="select"
                                                               id={el} 
                                                               onChange={(e) => this.props.changeValue(e)} 
-                                                              value = {this.props.columns[el].state}>
+                                                              value = {this.props.columns[el].state}
+                                                              size="sm">
                                                     <option value="default">Défaut</option>
                                                     <option value="ignore">Ignorer</option>
                                                     <option value="vow">Vœu</option>
@@ -64,7 +65,8 @@ class Vows extends Component {
                                             </td>
                                             <td><Form.Control as="select"
                                                               id={el} 
-                                                              value = {this.props.columns[el].vowNum}>
+                                                              value = {this.props.columns[el].vowNum}
+                                                              size="sm">
                                                     <option value={-1}>Pas un vœu</option>
                                                     {poss.map((el)=>{
                                                         return <option key={el}  value={el}>{el}</option>

@@ -31,6 +31,7 @@ class Affectations extends Component {
                 <hr />
                 <BootstrapTable
                   bootstrap4
+                  classes="table-sm"
                   wrapperClasses="table-responsive"
                   striped
                   hover
