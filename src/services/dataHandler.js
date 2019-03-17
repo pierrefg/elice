@@ -20,7 +20,7 @@ class dataHandler{
         var columns = {};
 
         for (var el in data[0]){
-            if(el !== "" && el !== "↵"){
+            if(el !== "" && el !== "\n" && el !== "\r\n"){
                 let temp = {
                     state: "ignore", //default/vow/ignore(will not be used)
                     vowNum: -1
