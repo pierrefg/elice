@@ -3,36 +3,37 @@ import { Type } from 'react-bootstrap-table2-editor';
 class reactTableUtil{
     static columnParser(cols, groups){
         let result = []
-        for(var el in cols){
-            let temp = cols[el]
-            if(temp.state !== "ignore"){
-                if(temp.state === "vow"){
+        for(var colName in cols){
+            let col = cols[colName]
+            if(col.state !== "ignore"){
+                if(col.state === "vow"){
                     result.push({
-                        dataField: el,
-                        text: "Vœu " + temp.vowNum,
+                        dataField: colName,
+                        text: "Vœu " + col.vowNum,
                         sort: true
-                    })
+                    });
                 }else{
                     result.push({
-                        dataField: el,
-                        text: el,
+                        dataField: colName,
+                        text: colName,
                         sort: true
-                    })
+                    });
                 }
             }else{
                 /*result.push({
-                    dataField: el,
-                    text: el,
+                    dataField: colName,
+                    text: colName,
                     hidden: true
                 })*/
             }
         }
+
         var optionsAffec = [{value:"auto", label:"auto"}]
-        for(var i in groups){
+        for(var groupName in groups){
             optionsAffec.push({
-                value:i,
-                label:i
-            })
+                value: groupName,
+                label: groupName
+            });
         }
         result.push({
             dataField: 'affecMode',
@@ -41,7 +42,7 @@ class reactTableUtil{
                     type: Type.SELECT,
                     options: optionsAffec
                     }
-            })
+            });
         return result
     }
 

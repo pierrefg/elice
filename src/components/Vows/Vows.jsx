@@ -19,9 +19,9 @@ class Vows extends Component {
     render() {
         const { open } = this.state;
 
-        var poss = []
-        for(var i=0; i<this.props.vowNumber; i++){
-            poss.push(i)
+        var vowRanks = [];
+        for(var i=0; i < this.props.vowNumber; i++){
+            vowRanks.push(i);
         }
 
         return (
@@ -68,8 +68,8 @@ class Vows extends Component {
                                                               value = {this.props.columns[el].vowNum}
                                                               size="sm">
                                                     <option value={-1}>Pas un vœu</option>
-                                                    {poss.map((el)=>{
-                                                        return <option key={el}  value={el}>{el}</option>
+                                                    {vowRanks.map((el)=>{
+                                                        return <option key={el} value={el}>{el}</option>;
                                                     })}
                                                 </Form.Control>
                                             </td>

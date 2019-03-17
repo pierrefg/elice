@@ -21,7 +21,6 @@ class Affectations extends Component {
           columns = {this.props.rtColumns}
           search
           exportCSV
-          
         >
           {
             props => (

@@ -24,7 +24,7 @@ class App extends Component {
       groups : [],
       students : [],
       rtColumns: [{dataField: 'idVent', text: 'Vide'}]
-    }
+    };
   }
 
   handleData(data){
@@ -37,31 +37,31 @@ class App extends Component {
         groups : [],
         students : data,
         rtColumns: reactTableUtil.columnParser(cols, this.state.groups)
-    })
+    });
   }
 
   handleDataError(e){
-    console.log("error")
+    console.log("error");
   }
 
   changeValue(e){
-    let value = e.target.value
-    let key = e.target.id
+    let value = e.target.value;
+    let key = e.target.id;
     if(this.state.columns[key].state === "vow"){
-      this.state.vowsNumber--
-      this.state.columns[key].vowNum=-1
+      this.state.vowsNumber--;
+      this.state.columns[key].vowNum=-1;
     }
     if(value === "vow"){
-      this.state.columns[key].vowNum=this.state.vowsNumber
-      this.state.vowsNumber++
+      this.state.columns[key].vowNum=this.state.vowsNumber;
+      this.state.vowsNumber++;
     }
-    this.state.columns[key].state=value
+    this.state.columns[key].state=value;
     this.setState({
       columns: this.state.columns,
       rtColumns: reactTableUtil.columnParser(this.state.columns, this.state.groups),
       vowNumber: this.state.vowsNumber,
       groups: dataHandler.getGroups(this.state.students, this.state.columns)
-    })
+    });
   }
 
   loadState(){
@@ -78,7 +78,7 @@ class App extends Component {
     return (
       <Container>
         <Jumbotron>
-        {/*addon.hello()*/}
+        { /*addon.hello()*/ }
         <h1>Ventilation</h1>
         <hr/>
         <CSVReader
