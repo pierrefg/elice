@@ -19,9 +19,9 @@ class Vows extends Component {
     render() {
         const { open } = this.state;
 
-        var vowRanks = [];
-        for(var i=0; i < this.props.vowNumber; i++){
-            vowRanks.push(i);
+        var vowNums = [];
+        for(var i=1; i <= this.props.vowNumber+1; i++){
+            vowNums.push(i);
         }
 
         return (
@@ -55,7 +55,7 @@ class Vows extends Component {
                                             <td>
                                                 <Form.Control as="select"
                                                               id={el} 
-                                                              onChange={(e) => this.props.changeValue(e)} 
+                                                              onChange={(e) => this.props.changeMode(e)}
                                                               value = {this.props.columns[el].state}
                                                               size="sm">
                                                     <option value="default">Défaut</option>
@@ -65,10 +65,11 @@ class Vows extends Component {
                                             </td>
                                             <td><Form.Control as="select"
                                                               id={el} 
+                                                              onChange={(e) => this.props.changeVowNum(e)}
                                                               value = {this.props.columns[el].vowNum}
                                                               size="sm">
                                                     <option value={-1}>Pas un vœu</option>
-                                                    {vowRanks.map((el)=>{
+                                                    {vowNums.map((el)=>{
                                                         return <option key={el} value={el}>{el}</option>;
                                                     })}
                                                 </Form.Control>

@@ -19,7 +19,7 @@ class App extends Component {
     super();
 
     this.state = {
-      vowsNumber: 0,
+      vowNumber: 0,
       columns : [],
       groups : [],
       students : [],
@@ -44,23 +44,72 @@ class App extends Component {
     console.log("error");
   }
 
-  changeValue(e){
+  changeColumnMode(e){
     let value = e.target.value;
     let key = e.target.id;
-    if(this.state.columns[key].state === "vow"){
-      this.state.vowsNumber--;
-      this.state.columns[key].vowNum=-1;
+    let vowNumber = this.state.vowNumber;
+    let columns = {...this.state.columns};
+    
+    // Change from vow type
+    if(columns[key].state === "vow"){
+      vowNumber--;
+      for (var el in columns) {
+        if (columns[el].vowNum > columns[key].vowNum)
+          columns[el] = {...columns[el], vowNum: columns[el].vowNum-1};      
+      }
+      columns[key] = {...columns[key], vowNum: -1};
     }
+    
+    //Change to vow type
     if(value === "vow"){
-      this.state.columns[key].vowNum=this.state.vowsNumber;
-      this.state.vowsNumber++;
+      vowNumber++;
+      columns[key] = {...columns[key], vowNum: vowNumber};
     }
-    this.state.columns[key].state=value;
+    
+    columns[key] = {...columns[key], state: value};
+    
     this.setState({
-      columns: this.state.columns,
-      rtColumns: reactTableUtil.columnParser(this.state.columns, this.state.groups),
-      vowNumber: this.state.vowsNumber,
-      groups: dataHandler.getGroups(this.state.students, this.state.columns)
+      columns: columns,
+      rtColumns: reactTableUtil.columnParser(columns, this.state.groups),
+      vowNumber: vowNumber,
+      groups: dataHandler.getGroups(this.state.students, columns)
+    });
+  }
+  
+  changeColumnVowNum(e){
+    let value = parseInt(e.target.value);
+    let key = e.target.id;
+    let vowNumber = this.state.vowNumber;
+    let columns = {...this.state.columns};
+    
+    if (value === -1) {
+      vowNumber--;
+      for (var el in columns) {
+        if (columns[el].vowNum > columns[key].vowNum)
+          columns[el] = {...columns[el], vowNum: columns[el].vowNum-1};      
+      }
+      columns[key] = {...columns[key], state: "ignore", vowNum: -1};
+    } else {
+      if (columns[key].state !== "vow") {
+          vowNumber++;
+          columns[key] = {...columns[key], state: "vow", vowNum: vowNumber};
+      }
+      
+      for (var el in columns) {
+        if (columns[el].vowNum === value) {
+          columns[el] = {...columns[el], vowNum: columns[key].vowNum};
+          break;
+        }
+      }
+      
+      columns[key] = {...columns[key], vowNum: value};
+    }
+    
+    this.setState({
+      columns: columns,
+      rtColumns: reactTableUtil.columnParser(columns, this.state.groups),
+      vowNumber: vowNumber,
+      groups: dataHandler.getGroups(this.state.students, columns)
     });
   }
 
@@ -92,7 +141,7 @@ class App extends Component {
         </Jumbotron>
         <Row>
           <Col>
-          <Vows vowNumber={this.state.vowNumber} changeValue = {this.changeValue.bind(this)} columns = {this.state.columns}/>
+          <Vows vowNumber={this.state.vowNumber} changeMode = {this.changeColumnMode.bind(this)} changeVowNum = {this.changeColumnVowNum.bind(this)} columns = {this.state.columns}/>
           </Col><Col>
           <Groups groups = {this.state.groups} /*loadData = {this.loadData.bind(this)}*//>
           </Col>

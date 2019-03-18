@@ -47,7 +47,7 @@ class dataHandler{
         for(var rowNum in data){ //Go through all the rows
             var row = data[rowNum];
             for(var i in vowCols){ //Go through all the vow columns
-                console.log(row[vowCols[i]])
+                //console.log(row[vowCols[i]])
                 if(row[vowCols[i]] !== undefined){
                     if(groups[row[vowCols[i]]] === undefined){
                         groups[row[vowCols[i]]] = {
