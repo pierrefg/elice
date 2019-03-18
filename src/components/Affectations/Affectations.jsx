@@ -6,6 +6,8 @@ import ToolkitProvider, { Search, CSVExport } from 'react-bootstrap-table2-toolk
 import paginationFactory from 'react-bootstrap-table2-paginator';
 import cellEditFactory from 'react-bootstrap-table2-editor';
 
+import "./affectations.css"
+
 const { SearchBar } = Search;
 const { ExportCSVButton } = CSVExport;
 
