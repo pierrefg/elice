@@ -4,6 +4,7 @@ import Form from 'react-bootstrap/Form';
 import BootstrapTable from 'react-bootstrap-table-next';
 import ToolkitProvider, { Search, CSVExport } from 'react-bootstrap-table2-toolkit';
 import paginationFactory from 'react-bootstrap-table2-paginator';
+import Button from 'react-bootstrap/Button';
 import cellEditFactory from 'react-bootstrap-table2-editor';
 
 import "./affectations.css"
@@ -16,7 +17,7 @@ class Affectations extends Component {
     return (
       <div>
         <h2>Affectations</h2>
-
+        
         <ToolkitProvider
           keyField='idVent'
           data = {this.props.students} 
@@ -24,10 +25,12 @@ class Affectations extends Component {
           search
           exportCSV
         >
+
           {
             props => (
               <div>
                 <ExportCSVButton className="btn-primary mb-2" { ...props.csvProps }>Export CSV</ExportCSVButton>
+                <Button className="btn-primary mb-2" >Ventiler</Button>
                 <SearchBar placeholder="Recherche..." { ...props.searchProps } />
                 <hr />
                 <BootstrapTable

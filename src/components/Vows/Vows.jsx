@@ -80,8 +80,6 @@ class Vows extends Component {
                     }
                     </tbody>
                 </Table>
-                
-                <Button variant="secondary">Suite</Button>
                 </div>
             </Collapse>
         </div>

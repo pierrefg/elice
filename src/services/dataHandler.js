@@ -32,6 +32,7 @@ class dataHandler{
         
     }
 
+    /** Find all distinct affectation options */
     static getGroups(data, columns){
         var groups = {};
         var vowCols = [];
@@ -64,6 +65,7 @@ class dataHandler{
         return groups;
     }
 
+    /** Create an id for each row */
     static createIds(data){
         var i = 0;
         for(var el in data){

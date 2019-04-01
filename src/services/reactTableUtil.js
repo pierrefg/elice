@@ -19,15 +19,10 @@ class reactTableUtil{
                         sort: true
                     });
                 }
-            }else{
-                /*result.push({
-                    dataField: colName,
-                    text: colName,
-                    hidden: true
-                })*/
             }
         }
 
+        //Adding the affectation mode dropdown field
         var optionsAffec = [{value:"auto", label:"auto"}]
         for(var groupName in groups){
             optionsAffec.push({
@@ -39,10 +34,17 @@ class reactTableUtil{
             dataField: 'affecMode',
             text: "Mode d'affectation",
             editor: {
-                    type: Type.SELECT,
-                    options: optionsAffec
+                        type: Type.SELECT,
+                        options: optionsAffec
                     }
-            });
+        });
+
+        //Adding the result column
+        result.push({
+            dataField: "result",
+            text: "Result",
+            sort: true
+        });
         return result
     }
 
