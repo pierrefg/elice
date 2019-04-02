@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 
-import Form from 'react-bootstrap/Form';
 import BootstrapTable from 'react-bootstrap-table-next';
 import ToolkitProvider, { Search, CSVExport } from 'react-bootstrap-table2-toolkit';
 import paginationFactory from 'react-bootstrap-table2-paginator';
@@ -30,7 +29,7 @@ class Affectations extends Component {
             props => (
               <div>
                 <ExportCSVButton className="btn-primary mb-2" { ...props.csvProps }>Export CSV</ExportCSVButton>
-                <Button className="btn-primary mb-2" >Ventiler</Button>
+                <Button className="btn-primary mb-2" onClick={() => this.props.affect()} >Ventiler</Button>
                 <SearchBar placeholder="Recherche..." { ...props.searchProps } />
                 <hr />
                 <BootstrapTable

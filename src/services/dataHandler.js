@@ -14,6 +14,16 @@ class dataHandler{
         return data;
     }
 
+    /** Create an id for each row */
+    static createIds(data){
+        var i = 0;
+        for(var el in data){
+            data[el].idVent = i;
+            i++;
+        }
+        return data;
+    }
+
     static getColumns(data){
         var columns = {};
 
@@ -65,13 +75,7 @@ class dataHandler{
         return groups;
     }
 
-    /** Create an id for each row */
-    static createIds(data){
-        var i = 0;
-        for(var el in data){
-            data[el].idVent = i;
-            i++;
-        }
+    static affect(data){
         return data;
     }
 }

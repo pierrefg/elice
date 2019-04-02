@@ -44,6 +44,14 @@ class App extends Component {
     console.log("error");
   }
 
+  affect(){
+    var data = dataHandler.affect(this.data);
+    console.log("coucou");
+    this.setState({
+      students : data
+    });
+  }
+
   changeColumnMode(e){
     let value = e.target.value;
     let key = e.target.id;
@@ -147,7 +155,7 @@ class App extends Component {
           </Col>
         </Row>
         <hr/>
-        <Affectations students = {this.state.students} rtColumns = {this.state.rtColumns}/>
+        <Affectations students = {this.state.students} rtColumns = {this.state.rtColumns} affect = {this.affect.bind(this)}/>
       </Container>
     );
   }
