@@ -12,8 +12,6 @@ import Container from 'react-bootstrap/Container'
 import Jumbotron from 'react-bootstrap/Jumbotron'
 import {Row,Col} from 'react-bootstrap'
 
-const addon = require('../../scripts/Release/addon.node');
-
 class App extends Component {
   constructor(){
     super();
@@ -135,7 +133,6 @@ class App extends Component {
     return (
       <Container>
         <Jumbotron>
-        { /*addon.hello()*/ }
         <h1>Ventilation</h1>
         <hr/>
         <CSVReader

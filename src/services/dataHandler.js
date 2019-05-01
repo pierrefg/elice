@@ -17,10 +17,7 @@ class dataHandler{
     /** Create an id for each row */
     static createIds(data){
         var i = 0;
-        for(var el in data){
-            data[el].idVent = i;
-            i++;
-        }
+        for(var el in data) data[el].idVent = i++;
         return data;
     }
 
@@ -35,11 +32,8 @@ class dataHandler{
                 };
             }
         }
-        
-        console.log("COLUMNS");
-        console.log(columns);
+
         return columns;
-        
     }
 
     /** Find all distinct affectation options */
@@ -52,8 +46,8 @@ class dataHandler{
                 vowCols.push(el);
             }
         }
-        console.log("GROUPS");
-        console.log(vowCols);
+        
+        let groupId = 0;
         //Find all the possible groups
         for(var rowNum in data){ //Go through all the rows
             var row = data[rowNum];
@@ -64,19 +58,14 @@ class dataHandler{
                         groups[row[vowCols[i]]] = {
                             nb:1, //Clumsy stat
                             nbStudents : 20, //Total number of places avalaible in this groups
-                            nbReservedPlaces : 0 //Places spared for other students
+                            nbReservedPlaces : 0, //Places spared for other students
+                            id: groupId++ //Group id
                         };
-                    }else{
-                        groups[row[vowCols[i]]].nb++;
                     }
                 }
             }
         }
         return groups;
-    }
-
-    static affect(data){
-        return data;
     }
 }
 
