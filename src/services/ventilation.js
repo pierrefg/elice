@@ -1,5 +1,7 @@
 class ventilation{
+    static dataParser(students){
 
+    }
 
 }
 

@@ -56,7 +56,6 @@ class dataHandler{
                 if(row[vowCols[i]] !== undefined){
                     if(groups[row[vowCols[i]]] === undefined){
                         groups[row[vowCols[i]]] = {
-                            nb:1, //Clumsy stat
                             nbStudents : 20, //Total number of places avalaible in this groups
                             nbReservedPlaces : 0, //Places spared for other students
                             id: groupId++ //Group id

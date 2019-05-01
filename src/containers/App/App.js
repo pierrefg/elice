@@ -6,6 +6,7 @@ import Groups from '../../components/Groups/Groups'
 import Affectations from '../../components/Affectations/Affectations'
 import dataHandler from '../../services/dataHandler'
 import reactTableUtil from '../../services/reactTableUtil'
+import ventilation from '../../services/ventilation'
 
 import CSVReader from 'react-csv-reader'
 import Container from 'react-bootstrap/Container'
@@ -131,7 +132,7 @@ class App extends Component {
 
   render() {
     return (
-      <Container>
+      <Container fluid={true}>
         <Jumbotron>
         <h1>Ventilation</h1>
         <hr/>
