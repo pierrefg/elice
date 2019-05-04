@@ -176,7 +176,7 @@
  * maxs = [2,2,2]
  *
  * assignments = process( penalties, mins, maxs, wishs, interests );
- * stats = analyze_results(wishs, interests, penalties, mins, maxs, assignments);
+ * stats = analyze_results(assignments, penalties, mins, maxs, wishs, interests);
  *
  * console.log(assignments);
  * console.log(stats);
@@ -466,10 +466,19 @@ function extract_assignments(indexes, wish_max_places) {
 /**
  * this function performs some statistics about
  *      the assignments made with the munkres algorithm.
+ * @param {!Array<int>} assignments
+ *      the index of the array is the index of the student (0 indexation)
+ *      the value is the index of the wish (the course) (1 indexation)
+ * @param {!Array<int>} wish_penalties represents the penalties while assigning
+ *      a student to one of its wishs
+ * @param {!Array<int>} wish_min_places is the minimum number of students we
+ *      must have for each wish
+ * @param {!Array<int>} wish_max_places is the maximum number of students we
+ *      can have for each wish
  * @param {!Array<Array<int>>} wish_matrix is a matrix, each row is a student,
  *      each column is a course, each value is the rank of the course in the
  *      wish list of the student. The values are in [1 ; number of courses]
- * @param {!Array<Array<int>>} interest_matrix is a matrix, each row is a
+ * @param {Array<Array<int>>} interest_matrix is a matrix, each row is a
  *      student, each column is a course, each value is the interest of the
  *      student for the course. The values are in: { 
  *        -2 (not interesting at all);
@@ -477,15 +486,7 @@ function extract_assignments(indexes, wish_max_places) {
  *         1 (interesting);
  *         2 (very interesting)
  *      }
- * @param {!Array<int>} wish_penalties represents the penalties while assigning
- *      a student to one of its wishs
- * @param {!Array<int>} wish_min_places is the minimum number of students we
- *      must have for each wish
- * @param {!Array<int>} wish_max_places is the maximum number of students we
- *      can have for each wish
- * @param {!Array<int>} assignments
- *      the index of the array is the index of the student (0 indexation)
- *      the value is the index of the wish (the course) (1 indexation)
+ *      This parameter is optionnal.
  * @return {!Object} a dictionnary which contains different statistics about
  *      the assignments made with the munkres algorithm.
  *      This is the structure of the result:
@@ -516,85 +517,53 @@ function extract_assignments(indexes, wish_max_places) {
  *          ...
  *        }
  *      }
+ *      If the interests are disabled (no attribute interest_matrix),
+ *      penalty2 will not appear in the result.
  */
 function analyze_results(
-    wish_matrix,
-    interest_matrix,
+    assignments,
     wish_penalties,
     wish_min_places,
     wish_max_places,
-    assignments
+    wish_matrix,
+    interest_matrix
 ) {
     let students_number = wish_matrix.length;
     let wishes_number = wish_penalties.length;
+    let interests_enabled = (typeof interest_matrix !== 'undefined');
+    
     let results = {
       "penalty1": 0,
-      "penalty2": 0,
       "students": [],
       "courses": [],
       "wishes": {}
     };
+    if (interests_enabled) {
+      results["penalty2"] = 0;
+    }
     
     for (var i=0; i<wishes_number; i++) {
       results["courses"].push({
-        "students": 0
+        "students": 0,
+        "penalty1": 0
       });
+      if (interests_enabled) {
+        results["courses"][i]["penalty2"] = 0;
+      }
     }
-    
     
     for (var i=0; i<students_number; i++) {
       let assignment = assignments[i];
       let wish_rank = wish_matrix[i][assignment-1];
       let penalty1 = wish_penalties[wish_rank-1];
-      let penalty2 = penalty1;
-      let interest = interest_matrix[i][assignment-1];
-      
-      let next_penalty = 0;
-      if (wish_rank < wish_penalties.lengh) {
-        next_penalty = wish_penalties[ wish_rank ];
-      } else {
-        next_penalty = 2*penalty1;
-      }
-      let coef = 0;
-      switch (interest) {
-        case -2:
-          coef = 1;
-          break;
-            
-        case -1:
-          coef = 0.66;
-          break;
-          
-        case 1:
-          coef = 0.33;
-          break;
-          
-        case 2:
-          coef = 0;
-          break;
-            
-        default:
-          coef = 0;
-          console.log("Invalid value for wish interest !\n"
-              + "Wish interest value must be in:\n"
-              + "(very interesting : 2,\n"
-              + " interesting : 1,\n"
-              + " not really interesting : -1,\n"
-              + " not interesting at all : -2)");
-          break;
-      }
-      penalty2 += Math.round( coef*(next_penalty - penalty1) ) ;
-        
       
       results["penalty1"] += penalty1;
-      results["penalty2"] += penalty2;
       results["students"].push({
         "assignment": assignment,
         "wish_rank": wish_rank,
-        "interest": interest,
-        "penalty1": penalty1,
-        "penalty2": penalty2,
+        "penalty1": penalty1
       });
+      
       if (wish_rank in results["wishes"]) {
         results["wishes"][wish_rank] += 1;
       } else {
@@ -602,12 +571,60 @@ function analyze_results(
       }
       
       results["courses"][assignment-1]["students"] += 1;
+      results["courses"][assignment-1]["penalty1"] += penalty1;
       if (wish_rank in results["courses"][assignment-1]) {
         results["courses"][assignment-1][wish_rank] += 1;
       } else {
         results["courses"][assignment-1][wish_rank] = 1;
       }
-
+      
+      
+      if (interests_enabled) {
+        let interest = interest_matrix[i][assignment-1];
+        let penalty2 = penalty1;
+      
+        let next_penalty = 0;
+        if (wish_rank < wish_penalties.lengh) {
+          next_penalty = wish_penalties[ wish_rank ];
+        } else {
+          next_penalty = 2*penalty1;
+        }
+        let coef = 0;
+        switch (interest) {
+          case -2:
+            coef = 1;
+            break;
+              
+          case -1:
+            coef = 0.66;
+            break;
+            
+          case 1:
+            coef = 0.33;
+            break;
+            
+          case 2:
+            coef = 0;
+            break;
+              
+          default:
+            coef = 0;
+            console.log("Invalid value for wish interest !\n"
+                + "Wish interest value must be in:\n"
+                + "(very interesting : 2,\n"
+                + " interesting : 1,\n"
+                + " not really interesting : -1,\n"
+                + " not interesting at all : -2)");
+            break;
+        }
+        penalty2 += Math.round( coef*(next_penalty - penalty1) ) ;
+        
+        results["penalty2"] += penalty2;
+        results["students"][i]["penalty2"] = penalty2;
+        results["students"][i]["interest"] = interest;
+        results["courses"][assignment-1]["penalty2"] += penalty2;
+      }
+      
     }
     
     return results;
@@ -626,7 +643,7 @@ function analyze_results(
  * @param {!Array<Array<int>>} wish_matrix is a matrix, each row is a student,
  *      each column is a course, each value is the rank of the course in the
  *      wish list of the student. The values are in [1 ; number of courses]
- * @param {!Array<Array<int>>} interest_matrix is a matrix, each row is a
+ * @param {Array<Array<int>>} interest_matrix is a matrix, each row is a
  *      student, each column is a course, each value is the interest of the
  *      student for the course. The values are in: { 
  *        -2 (not interesting at all);
