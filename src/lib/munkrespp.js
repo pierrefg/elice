@@ -721,7 +721,7 @@ mins = [1,1,0]
 maxs = [2,2,2]
 
 assignments = process( penalties, mins, maxs, wishs, interests );
-stats = analyze_results(wishs, interests, penalties, mins, maxs, assignments);
+stats = analyze_results(assignments, penalties, mins, maxs, wishs, interests);
     
 
 console.log(assignments);
