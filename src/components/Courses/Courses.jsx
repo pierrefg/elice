@@ -2,21 +2,21 @@ import React, {Component} from 'react';
 import Button from 'react-bootstrap/Button';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
 
-class Groups extends Component {
+class Courses extends Component {
     render() {
         return (
             <div>
-                <h2> Groupes </h2>
+                <h2>Cours</h2>
 
-                {Object.keys(this.props.groups).map((el) => {
-                    return <GroupTile key={el} name={el} infos={this.props.groups[el]}/>;
+                {Object.keys(this.props.courses).map((el) => {
+                    return <CourseTile key={el} name={el} infos={this.props.courses[el]}/>;
                 })}
             </div>
         );
     }
 }
 
-class GroupTile extends Component {
+class CourseTile extends Component {
     render() {
         return (
             <div>
@@ -37,4 +37,4 @@ class GroupTile extends Component {
     }
 }
 
-export default Groups;
+export default Courses;

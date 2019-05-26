@@ -37,8 +37,8 @@ class dataHandler{
     }
 
     /** Find all distinct affectation options */
-    static getGroups(data, columns){
-        let groups = {};
+    static getCourses(data, columns) {
+        let courses = {};
         let wishCols = [];
         //Get the columns set as wish Columns by the user
         for(let el in columns){
@@ -46,27 +46,27 @@ class dataHandler{
                 wishCols.push(el);
             }
         }
-        let groupId = 0;
-        //Find all the possible groups
+        let courseId = 0;
+        //Find all the possible courses
         for(let rowNum in data){ //Go through all the rows
             let row = data[rowNum];
             for(let i in wishCols){ //Go through all the wish columns
                 //console.log(row[wishCols[i]])
                 if(row[wishCols[i]] !== undefined){
-                    if(groups[row[wishCols[i]]] === undefined){
-                        groups[row[wishCols[i]]] = {
-                            nbStudents : 20, //Total number of places avalaible in this groups
+                    if (courses[row[wishCols[i]]] === undefined) {
+                        courses[row[wishCols[i]]] = {
+                            nbStudents: 20, //Total number of places available in this course
                             nbReservedPlaces : 0, //Places spared for other students
-                            id: groupId++ //Group id
+                            id: courseId++ //Course id
                         };
                     }
                 }
             }
         }
-        return groups;
+        return courses;
     }
 
-    static affect(d, groups){
+    static affect(d, courses) {
         let data = [...d];
         for (let rowIndex in data) {
             data[rowIndex] = {...data[rowIndex], result: 1};

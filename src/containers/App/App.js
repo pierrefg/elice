@@ -1,8 +1,8 @@
 import React, {Component} from 'react';
 import './App.css';
 
-import Wishes from '../../components/Wishes/Wishes'
-import Groups from '../../components/Groups/Groups'
+import Columns from '../../components/Columns/Columns'
+import Courses from '../../components/Courses/Courses'
 import Affectations from '../../components/Affectations/Affectations'
 import dataHandler from '../../services/dataHandler'
 import reactTableUtil from '../../services/reactTableUtil'
@@ -19,7 +19,7 @@ class App extends Component {
         this.state = {
             wishCount: 0,
             columns: [],
-            groups: [],
+            courses: [],
             students: [],
             rtColumns: [{dataField: 'idVent', text: 'Vide'}]
         };
@@ -32,9 +32,9 @@ class App extends Component {
 
         this.setState({
             columns: cols,
-            groups: [],
+            courses: [],
             students: data,
-            rtColumns: reactTableUtil.columnParser(cols, this.state.groups)
+            rtColumns: reactTableUtil.columnParser(cols, this.state.courses)
         });
     }
 
@@ -43,7 +43,7 @@ class App extends Component {
     }
 
     affect() {
-        let data = dataHandler.affect(this.state.students, this.state.groups);
+        let data = dataHandler.affect(this.state.students, this.state.courses);
         this.setState({students: data});
     }
 
@@ -73,9 +73,9 @@ class App extends Component {
 
         this.setState({
             columns: columns,
-            rtColumns: reactTableUtil.columnParser(columns, this.state.groups),
+            rtColumns: reactTableUtil.columnParser(columns, this.state.courses),
             wishCount: wishCount,
-            groups: dataHandler.getGroups(this.state.students, columns)
+            courses: dataHandler.getCourses(this.state.students, columns)
         });
     }
 
@@ -110,9 +110,9 @@ class App extends Component {
 
         this.setState({
             columns: columns,
-            rtColumns: reactTableUtil.columnParser(columns, this.state.groups),
+            rtColumns: reactTableUtil.columnParser(columns, this.state.courses),
             wishCount: wishCount,
-            groups: dataHandler.getGroups(this.state.students, columns)
+            courses: dataHandler.getCourses(this.state.students, columns)
         });
     }
 
@@ -143,11 +143,11 @@ class App extends Component {
                 </Jumbotron>
                 <Row>
                     <Col>
-                        <Wishes wishCount={this.state.wishCount} changeMode={this.changeColumnMode.bind(this)}
-                                changeWishNum={this.changeColumnWishNum.bind(this)} columns={this.state.columns}/>
+                        <Columns wishCount={this.state.wishCount} changeMode={this.changeColumnMode.bind(this)}
+                                 changeWishNum={this.changeColumnWishNum.bind(this)} columns={this.state.columns}/>
                     </Col>
                     <Col>
-                        <Groups groups={this.state.groups} /*loadData = {this.loadData.bind(this)}*//>
+                        <Courses courses={this.state.courses} /*loadData = {this.loadData.bind(this)}*//>
                     </Col>
                 </Row>
                 <hr/>

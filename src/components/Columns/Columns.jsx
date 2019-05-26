@@ -6,9 +6,9 @@ import Collapse from 'react-bootstrap/Collapse'
 import Form from 'react-bootstrap/Form'
 
 
-class Wishes extends Component {
-    constructor() {
-        super();
+class Columns extends Component {
+    constructor(props) {
+        super(props);
 
         this.state = {
             open: true
@@ -25,7 +25,7 @@ class Wishes extends Component {
 
         return (
             <div>
-                <h2><span>Vœux</span>
+                <h2><span>Colonnes</span>
                     <Button
                         variant="secondary"
                         onClick={() => this.setState({open: !open})}
@@ -86,4 +86,4 @@ class Wishes extends Component {
     }
 }
 
-export default Wishes;
+export default Columns;

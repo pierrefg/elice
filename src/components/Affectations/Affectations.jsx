@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 
 import BootstrapTable from 'react-bootstrap-table-next';
-import ToolkitProvider, {Search, CSVExport} from 'react-bootstrap-table2-toolkit';
+import ToolkitProvider, {CSVExport, Search} from 'react-bootstrap-table2-toolkit';
 import paginationFactory from 'react-bootstrap-table2-paginator';
 import Button from 'react-bootstrap/Button';
 import cellEditFactory from 'react-bootstrap-table2-editor';
@@ -28,11 +28,13 @@ class Affectations extends Component {
                     {
                         props => (
                             <div>
-                                <ExportCSVButton className="btn-primary mb-2" {...props.csvProps}>Export
-                                    CSV</ExportCSVButton>
-                                <Button className="btn-primary mb-2"
-                                        onClick={() => this.props.affect()}>Ventiler</Button>
                                 <SearchBar placeholder="Recherche..." {...props.searchProps} />
+                                <div className="float-right">
+                                    <Button className="btn-primary mr-2"
+                                            onClick={() => this.props.affect()}>Ventiler</Button>
+                                    <ExportCSVButton className="btn-primary" {...props.csvProps}>Export
+                                        CSV</ExportCSVButton>
+                                </div>
                                 <hr/>
                                 <BootstrapTable
                                     bootstrap4

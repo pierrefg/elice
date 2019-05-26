@@ -1,10 +1,10 @@
-import { Type } from 'react-bootstrap-table2-editor';
+import {Type} from 'react-bootstrap-table2-editor';
 
 class reactTableUtil{
-    static columnParser(cols, groups){
-        let result = []
+    static columnParser(cols, courses) {
+        let result = [];
         for(let colName in cols){
-            let col = cols[colName]
+            let col = cols[colName];
             if(col.state !== "ignore"){
                 if(col.state === "wish"){
                     result.push({
@@ -23,11 +23,11 @@ class reactTableUtil{
         }
 
         //Adding the affectation mode dropdown field
-        let optionsAffec = [{value:"auto", label:"Automatique"}]
-        for(let groupName in groups){
+        let optionsAffec = [{value: "auto", label: "Automatique"}];
+        for (let courseName in courses) {
             optionsAffec.push({
-                value: groupName,
-                label: groupName
+                value: courseName,
+                label: courseName
             });
         }
         result.push({
