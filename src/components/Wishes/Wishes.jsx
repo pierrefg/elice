@@ -5,9 +5,9 @@ import Button from 'react-bootstrap/Button'
 import Collapse from 'react-bootstrap/Collapse'
 import Form from 'react-bootstrap/Form'
 
-import "./vows.css"
+import "./wishes.css"
 
-class Vows extends Component {
+class Wishes extends Component {
     constructor(){
         super();
 
@@ -19,9 +19,9 @@ class Vows extends Component {
     render() {
         const { open } = this.state;
 
-        var vowNums = [];
-        for(var i=1; i <= this.props.vowNumber+1; i++){
-            vowNums.push(i);
+        var wishNums = [];
+        for(var i=1; i <= this.props.wishNumber+1; i++){
+            wishNums.push(i);
         }
 
         return (
@@ -54,22 +54,22 @@ class Vows extends Component {
                                             <td>{el}</td>
                                             <td>
                                                 <Form.Control as="select"
-                                                              id={el} 
+                                                              id={el}
                                                               onChange={(e) => this.props.changeMode(e)}
                                                               value = {this.props.columns[el].state}
                                                               size="sm">
                                                     <option value="default">Défaut</option>
                                                     <option value="ignore">Ignorer</option>
-                                                    <option value="vow">Vœu</option>
+                                                    <option value="wish">Vœu</option>
                                                 </Form.Control>
                                             </td>
                                             <td><Form.Control as="select"
-                                                              id={el} 
-                                                              onChange={(e) => this.props.changeVowNum(e)}
-                                                              value = {this.props.columns[el].vowNum}
+                                                              id={el}
+                                                              onChange={(e) => this.props.changeWishNum(e)}
+                                                              value = {this.props.columns[el].wishNum}
                                                               size="sm">
                                                     <option value={-1}>Pas un vœu</option>
-                                                    {vowNums.map((el)=>{
+                                                    {wishNums.map((el)=>{
                                                         return <option key={el} value={el}>{el}</option>;
                                                     })}
                                                 </Form.Control>
@@ -87,4 +87,4 @@ class Vows extends Component {
     }
 }
 
-export default Vows;
+export default Wishes;

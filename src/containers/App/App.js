@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import './App.css';
 
-import Vows from '../../components/Vows/Vows'
+import Wishes from '../../components/Wishes/Wishes'
 import Groups from '../../components/Groups/Groups'
 import Affectations from '../../components/Affectations/Affectations'
 import dataHandler from '../../services/dataHandler'
@@ -18,7 +18,7 @@ class App extends Component {
     super();
 
     this.state = {
-      vowNumber: 0,
+      wishNumber: 0,
       columns : [],
       groups : [],
       students : [],
@@ -40,80 +40,79 @@ class App extends Component {
   }
 
   handleDataError(e){
-    console.log("error");
+    console.log(e);
   }
 
   affect(){
     var data = dataHandler.affect(this.state.students, this.state.groups);
-    console.log("coucou");
     this.setState({students: data});
   }
 
   changeColumnMode(e){
     let value = e.target.value;
     let key = e.target.id;
-    let vowNumber = this.state.vowNumber;
+    let wishNumber = this.state.wishNumber;
     let columns = {...this.state.columns};
-    
-    // Change from vow type
-    if(columns[key].state === "vow"){
-      vowNumber--;
+
+    // Change from wish type
+    if(columns[key].state === "wish"){
+      wishNumber--;
       for (var el in columns) {
-        if (columns[el].vowNum > columns[key].vowNum)
-          columns[el] = {...columns[el], vowNum: columns[el].vowNum-1};      
+        if (columns[el].wishNum > columns[key].wishNum)
+          columns[el] = {...columns[el], wishNum: columns[el].wishNum-1};
       }
-      columns[key] = {...columns[key], vowNum: -1};
+      columns[key] = {...columns[key], wishNum: -1};
     }
-    
-    //Change to vow type
-    if(value === "vow"){
-      vowNumber++;
-      columns[key] = {...columns[key], vowNum: vowNumber};
+
+    //Change to wish type
+    if(value === "wish"){
+      wishNumber++;
+      columns[key] = {...columns[key], wishNum: wishNumber};
     }
-    
+
     columns[key] = {...columns[key], state: value};
-    
+
     this.setState({
       columns: columns,
       rtColumns: reactTableUtil.columnParser(columns, this.state.groups),
-      vowNumber: vowNumber,
+      wishNumber: wishNumber,
       groups: dataHandler.getGroups(this.state.students, columns)
     });
   }
-  
-  changeColumnVowNum(e){
+
+  changeColumnWishNum(e){
     let value = parseInt(e.target.value);
     let key = e.target.id;
-    let vowNumber = this.state.vowNumber;
+    let wishNumber = this.state.wishNumber;
     let columns = {...this.state.columns};
-    
+
     if (value === -1) {
-      vowNumber--;
+      wishNumber--;
       for (var el in columns) {
-        if (columns[el].vowNum > columns[key].vowNum)
-          columns[el] = {...columns[el], vowNum: columns[el].vowNum-1};      
+        if (columns[el].wishNum > columns[key].wishNum)
+          columns[el] = {...columns[el], wishNum: columns[el].wishNum-1};
       }
-      columns[key] = {...columns[key], state: "ignore", vowNum: -1};
+      columns[key] = {...columns[key], state: "ignore", wishNum: -1};
     } else {
-      if (columns[key].state !== "vow") {
-          vowNumber++;
-          columns[key] = {...columns[key], state: "vow", vowNum: vowNumber};
+      if (columns[key].state !== "wish") {
+          wishNumber++;
+          columns[key] = {...columns[key], state: "wish", wishNum: wishNumber};
       }
-      
+
       for (var el in columns) {
-        if (columns[el].vowNum === value) {
-          columns[el] = {...columns[el], vowNum: columns[key].vowNum};
+        if (columns[el].wishNum === value) {
+          columns[el] = {...columns[el], wishNum: columns[key].wishNum};
           break;
         }
       }
-      
-      columns[key] = {...columns[key], vowNum: value};
+
+      columns[key] = {...columns[key], wishNum: value};
     }
-    
+
     this.setState({
       columns: columns,
       rtColumns: reactTableUtil.columnParser(columns, this.state.groups),
-      vowNumber: vowNumber,
+      wishNumber: wishNumber,
       groups: dataHandler.getGroups(this.state.students, columns)
     });
   }
@@ -130,7 +129,7 @@ class App extends Component {
 
   render() {
     return (
-      <Container fluid={true}>
+      <Container fluid={false}>
         <Jumbotron>
         <h1>Ventilation</h1>
         <hr/>
@@ -145,7 +144,7 @@ class App extends Component {
         </Jumbotron>
         <Row>
           <Col>
-          <Vows vowNumber={this.state.vowNumber} changeMode = {this.changeColumnMode.bind(this)} changeVowNum = {this.changeColumnVowNum.bind(this)} columns = {this.state.columns}/>
+          <Wishes wishNumber={this.state.wishNumber} changeMode = {this.changeColumnMode.bind(this)} changeWishNum = {this.changeColumnWishNum.bind(this)} columns = {this.state.columns}/>
           </Col><Col>
           <Groups groups = {this.state.groups} /*loadData = {this.loadData.bind(this)}*//>
           </Col>

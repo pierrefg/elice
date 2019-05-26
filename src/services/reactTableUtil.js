@@ -6,10 +6,10 @@ class reactTableUtil{
         for(var colName in cols){
             let col = cols[colName]
             if(col.state !== "ignore"){
-                if(col.state === "vow"){
+                if(col.state === "wish"){
                     result.push({
                         dataField: colName,
-                        text: "Vœu " + col.vowNum,
+                        text: "Vœu " + col.wishNum,
                         sort: true
                     });
                 }else{

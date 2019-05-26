@@ -27,8 +27,8 @@ class dataHandler{
         for (var el in data[0]){
             if(el !== "" && el !== "\n" && el !== "\r\n"){
                 columns[el] = {
-                    state: "ignore", //default/vow/ignore(will not be used)
-                    vowNum: -1
+                    state: "ignore", //default/wish/ignore(will not be used)
+                    wishNum: -1
                 };
             }
         }
@@ -39,22 +39,22 @@ class dataHandler{
     /** Find all distinct affectation options */
     static getGroups(data, columns){
         var groups = {};
-        var vowCols = [];
-        //Get the columns set as Vow Columns by the user
+        var wishCols = [];
+        //Get the columns set as wish Columns by the user
         for(var el in columns){
-            if(columns[el]["state"] === "vow"){
-                vowCols.push(el);
+            if(columns[el]["state"] === "wish"){
+                wishCols.push(el);
             }
         }
         let groupId = 0;
         //Find all the possible groups
         for(var rowNum in data){ //Go through all the rows
             var row = data[rowNum];
-            for(var i in vowCols){ //Go through all the vow columns
-                //console.log(row[vowCols[i]])
-                if(row[vowCols[i]] !== undefined){
-                    if(groups[row[vowCols[i]]] === undefined){
-                        groups[row[vowCols[i]]] = {
+            for(var i in wishCols){ //Go through all the wish columns
+                //console.log(row[wishCols[i]])
+                if(row[wishCols[i]] !== undefined){
+                    if(groups[row[wishCols[i]]] === undefined){
+                        groups[row[wishCols[i]]] = {
                             nbStudents : 20, //Total number of places avalaible in this groups
                             nbReservedPlaces : 0, //Places spared for other students
                             id: groupId++ //Group id
