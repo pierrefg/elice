@@ -69,7 +69,6 @@ class dataHandler{
     static affect(d, groups){
         let data = [...d];
         for (let rowIndex in data) {
-            data[rowIndex].result = 1
             data[rowIndex] = {...data[rowIndex], result: 1};
         }
         return data;
