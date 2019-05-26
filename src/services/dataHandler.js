@@ -63,16 +63,18 @@ class dataHandler{
                 }
             }
         }
+        console.log(groups);
         return groups;
     }
 
     static affect(d, groups){
-        let data = [...d];
+        /*let data = [...d];
         for (let rowIndex in data) {
-            data[rowIndex].result = 1
             data[rowIndex] = {...data[rowIndex], result: 1};
-        }
-        return data;
+        }*/
+
+        //return process([0,2,4,8,16,32], [20,20,20,20,20,20], [20,20,20,20,20,20], d, d);
+        //return data;
     }
 }
 
