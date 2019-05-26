@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import './App.css';
 
 import Wishes from '../../components/Wishes/Wishes'
@@ -6,12 +6,11 @@ import Groups from '../../components/Groups/Groups'
 import Affectations from '../../components/Affectations/Affectations'
 import dataHandler from '../../services/dataHandler'
 import reactTableUtil from '../../services/reactTableUtil'
-import ventilation from '../../services/ventilation'
 
 import CSVReader from 'react-csv-reader'
 import Container from 'react-bootstrap/Container'
 import Jumbotron from 'react-bootstrap/Jumbotron'
-import {Row,Col} from 'react-bootstrap'
+import {Col, Row} from 'react-bootstrap'
 
 class App extends Component {
   constructor(){
@@ -134,12 +133,12 @@ class App extends Component {
         <h1>Ventilation</h1>
         <hr/>
         <CSVReader
-                cssClass="csv-reader-input"
-                label=<span className="mr-1">Fichier CSV à charger : </span>
-                onFileLoaded={this.handleData.bind(this)}
-                onError={this.handleDataError}
-                parserOptions={{header: true, encoding: "UTF-8"}}
-                inputId="limeSurvey"
+            cssClass="csv-reader-input"
+            label=<span className="mr-1">Fichier CSV à charger : </span>
+            onFileLoaded={this.handleData.bind(this)}
+            onError={this.handleDataError}
+            parserOptions={{header: true, encoding: "UTF-8"}}
+            inputId="limeSurvey"
         />
         </Jumbotron>
         <Row>

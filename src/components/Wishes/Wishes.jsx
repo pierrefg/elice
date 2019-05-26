@@ -1,11 +1,10 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 
 import Table from 'react-bootstrap/Table'
 import Button from 'react-bootstrap/Button'
 import Collapse from 'react-bootstrap/Collapse'
 import Form from 'react-bootstrap/Form'
 
-import "./wishes.css"
 
 class Wishes extends Component {
     constructor(){
@@ -26,7 +25,7 @@ class Wishes extends Component {
 
         return (
         <div>
-            <h2> <span>Vœux</span>
+            <h2><span>Vœux</span>
             <Button
                 variant="secondary"
                 onClick={() => this.setState({ open: !open })}
