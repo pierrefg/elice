@@ -20,7 +20,7 @@ class Wishes extends Component {
         const { open } = this.state;
 
         let wishNums = [];
-        for(let i=1; i <= this.props.wishNumber+1; i++){
+        for(let i=1; i <= this.props.wishCount+1; i++){
             wishNums.push(i);
         }
 

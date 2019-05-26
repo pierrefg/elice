@@ -18,7 +18,7 @@ class App extends Component {
     super();
 
     this.state = {
-      wishNumber: 0,
+      wishCount: 0,
       columns : [],
       groups : [],
       students : [],
@@ -51,12 +51,12 @@ class App extends Component {
   changeColumnMode(e){
     let value = e.target.value;
     let key = e.target.id;
-    let wishNumber = this.state.wishNumber;
+    let wishCount = this.state.wishCount;
     let columns = {...this.state.columns};
 
     // Change from wish type
     if(columns[key].state === "wish"){
-      wishNumber--;
+      wishCount--;
       for (let el in columns) {
         if (columns[el].wishNum > columns[key].wishNum)
           columns[el] = {...columns[el], wishNum: columns[el].wishNum-1};
@@ -66,8 +66,8 @@ class App extends Component {
 
     //Change to wish type
     if(value === "wish"){
-      wishNumber++;
-      columns[key] = {...columns[key], wishNum: wishNumber};
+      wishCount++;
+      columns[key] = {...columns[key], wishNum: wishCount};
     }
 
     columns[key] = {...columns[key], state: value};
@@ -75,7 +75,7 @@ class App extends Component {
     this.setState({
       columns: columns,
       rtColumns: reactTableUtil.columnParser(columns, this.state.groups),
-      wishNumber: wishNumber,
+      wishCount: wishCount,
       groups: dataHandler.getGroups(this.state.students, columns)
     });
   }
@@ -83,11 +83,11 @@ class App extends Component {
   changeColumnWishNum(e){
     let value = parseInt(e.target.value);
     let key = e.target.id;
-    let wishNumber = this.state.wishNumber;
+    let wishCount = this.state.wishCount;
     let columns = {...this.state.columns};
 
     if (value === -1) {
-      wishNumber--;
+      wishCount--;
       for (let el in columns) {
         if (columns[el].wishNum > columns[key].wishNum)
           columns[el] = {...columns[el], wishNum: columns[el].wishNum-1};
@@ -95,8 +95,8 @@ class App extends Component {
       columns[key] = {...columns[key], state: "ignore", wishNum: -1};
     } else {
       if (columns[key].state !== "wish") {
-          wishNumber++;
-          columns[key] = {...columns[key], state: "wish", wishNum: wishNumber};
+          wishCount++;
+          columns[key] = {...columns[key], state: "wish", wishNum: wishCount};
       }
 
       for (let el in columns) {
@@ -112,7 +112,7 @@ class App extends Component {
     this.setState({
       columns: columns,
       rtColumns: reactTableUtil.columnParser(columns, this.state.groups),
-      wishNumber: wishNumber,
+      wishCount: wishCount,
       groups: dataHandler.getGroups(this.state.students, columns)
     });
   }
@@ -144,7 +144,7 @@ class App extends Component {
         </Jumbotron>
         <Row>
           <Col>
-          <Wishes wishNumber={this.state.wishNumber} changeMode = {this.changeColumnMode.bind(this)} changeWishNum = {this.changeColumnWishNum.bind(this)} columns = {this.state.columns}/>
+          <Wishes wishCount={this.state.wishCount} changeMode = {this.changeColumnMode.bind(this)} changeWishNum = {this.changeColumnWishNum.bind(this)} columns = {this.state.columns}/>
           </Col><Col>
           <Groups groups = {this.state.groups} /*loadData = {this.loadData.bind(this)}*//>
           </Col>
