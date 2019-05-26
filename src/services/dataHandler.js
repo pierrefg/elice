@@ -1,8 +1,8 @@
 class dataHandler{
     static preProcess(data){ //brackets, new columns
-        for(var row in data){
-            for(var el in data[row]){
-                var temp = el.replace("[", "{").replace("]", "}");
+        for(let row in data){
+            for(let el in data[row]){
+                let temp = el.replace("[", "{").replace("]", "}");
                 if(temp !== el){
                     data[row][temp] = data[row][el];
                     delete data[row][el];
@@ -16,15 +16,15 @@ class dataHandler{
 
     /** Create an id for each row */
     static createIds(data){
-        var i = 0;
-        for(var el in data) data[el].idVent = i++;
+        let i = 0;
+        for(let el in data) data[el].idVent = i++;
         return data;
     }
 
     static getColumns(data){
-        var columns = {};
+        let columns = {};
 
-        for (var el in data[0]){
+        for (let el in data[0]){
             if(el !== "" && el !== "\n" && el !== "\r\n"){
                 columns[el] = {
                     state: "ignore", //default/wish/ignore(will not be used)
@@ -38,19 +38,19 @@ class dataHandler{
 
     /** Find all distinct affectation options */
     static getGroups(data, columns){
-        var groups = {};
-        var wishCols = [];
+        let groups = {};
+        let wishCols = [];
         //Get the columns set as wish Columns by the user
-        for(var el in columns){
+        for(let el in columns){
             if(columns[el]["state"] === "wish"){
                 wishCols.push(el);
             }
         }
         let groupId = 0;
         //Find all the possible groups
-        for(var rowNum in data){ //Go through all the rows
-            var row = data[rowNum];
-            for(var i in wishCols){ //Go through all the wish columns
+        for(let rowNum in data){ //Go through all the rows
+            let row = data[rowNum];
+            for(let i in wishCols){ //Go through all the wish columns
                 //console.log(row[wishCols[i]])
                 if(row[wishCols[i]] !== undefined){
                     if(groups[row[wishCols[i]]] === undefined){
@@ -67,8 +67,8 @@ class dataHandler{
     }
 
     static affect(d, groups){
-        var data = [...d];
-        for (var rowIndex in data) {
+        let data = [...d];
+        for (let rowIndex in data) {
             data[rowIndex].result = 1
             data[rowIndex] = {...data[rowIndex], result: 1};
         }

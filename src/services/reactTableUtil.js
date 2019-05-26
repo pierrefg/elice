@@ -3,7 +3,7 @@ import { Type } from 'react-bootstrap-table2-editor';
 class reactTableUtil{
     static columnParser(cols, groups){
         let result = []
-        for(var colName in cols){
+        for(let colName in cols){
             let col = cols[colName]
             if(col.state !== "ignore"){
                 if(col.state === "wish"){
@@ -23,8 +23,8 @@ class reactTableUtil{
         }
 
         //Adding the affectation mode dropdown field
-        var optionsAffec = [{value:"auto", label:"Automatique"}]
-        for(var groupName in groups){
+        let optionsAffec = [{value:"auto", label:"Automatique"}]
+        for(let groupName in groups){
             optionsAffec.push({
                 value: groupName,
                 label: groupName

@@ -29,7 +29,7 @@ class App extends Component {
   handleData(data){
     data = dataHandler.preProcess(data);
     data = dataHandler.createIds(data);
-    var cols = dataHandler.getColumns(data);
+    let cols = dataHandler.getColumns(data);
 
     this.setState({
       columns : cols,
@@ -44,7 +44,7 @@ class App extends Component {
   }
 
   affect(){
-    var data = dataHandler.affect(this.state.students, this.state.groups);
+    let data = dataHandler.affect(this.state.students, this.state.groups);
     this.setState({students: data});
   }
 
@@ -57,7 +57,7 @@ class App extends Component {
     // Change from wish type
     if(columns[key].state === "wish"){
       wishNumber--;
-      for (var el in columns) {
+      for (let el in columns) {
         if (columns[el].wishNum > columns[key].wishNum)
           columns[el] = {...columns[el], wishNum: columns[el].wishNum-1};
       }
@@ -88,7 +88,7 @@ class App extends Component {
 
     if (value === -1) {
       wishNumber--;
-      for (var el in columns) {
+      for (let el in columns) {
         if (columns[el].wishNum > columns[key].wishNum)
           columns[el] = {...columns[el], wishNum: columns[el].wishNum-1};
       }
@@ -99,7 +99,7 @@ class App extends Component {
           columns[key] = {...columns[key], state: "wish", wishNum: wishNumber};
       }
 
-      for (var el in columns) {
+      for (let el in columns) {
         if (columns[el].wishNum === value) {
           columns[el] = {...columns[el], wishNum: columns[key].wishNum};
           break;
@@ -122,8 +122,8 @@ class App extends Component {
   }
 
   saveState(){
-    var fileDownload = require('js-file-download');
-    var data = encodeURIComponent(JSON.stringify(this.state));
+    let fileDownload = require('js-file-download');
+    let data = encodeURIComponent(JSON.stringify(this.state));
     fileDownload(data, 'state.json');
   }
 

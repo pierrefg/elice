@@ -19,8 +19,8 @@ class Wishes extends Component {
     render() {
         const { open } = this.state;
 
-        var wishNums = [];
-        for(var i=1; i <= this.props.wishNumber+1; i++){
+        let wishNums = [];
+        for(let i=1; i <= this.props.wishNumber+1; i++){
             wishNums.push(i);
         }
 
@@ -50,32 +50,30 @@ class Wishes extends Component {
                     <tbody>
                     {
                         Object.keys(this.props.columns).map((el) => {
-                            var temp =  <tr key={el}>
-                                            <td>{el}</td>
-                                            <td>
-                                                <Form.Control as="select"
-                                                              id={el}
-                                                              onChange={(e) => this.props.changeMode(e)}
-                                                              value = {this.props.columns[el].state}
-                                                              size="sm">
-                                                    <option value="default">Défaut</option>
-                                                    <option value="ignore">Ignorer</option>
-                                                    <option value="wish">Vœu</option>
-                                                </Form.Control>
-                                            </td>
-                                            <td><Form.Control as="select"
-                                                              id={el}
-                                                              onChange={(e) => this.props.changeWishNum(e)}
-                                                              value = {this.props.columns[el].wishNum}
-                                                              size="sm">
-                                                    <option value={-1}>Pas un vœu</option>
-                                                    {wishNums.map((el)=>{
-                                                        return <option key={el} value={el}>{el}</option>;
-                                                    })}
-                                                </Form.Control>
-                                            </td>
-                                        </tr>
-                            return temp
+                            return <tr key={el}>
+                                     <td>{el}</td>
+                                     <td>
+                                        <Form.Control as="select"
+                                                      id={el}
+                                                      onChange={(e) => this.props.changeMode(e)}
+                                                      value = {this.props.columns[el].state}
+                                                      size="sm">
+                                          <option value="default">Défaut</option>
+                                          <option value="ignore">Ignorer</option>
+                                          <option value="wish">Vœu</option>
+                                        </Form.Control>
+                                     </td>
+                                     <td>
+                                       <Form.Control as="select"
+                                                    id={el}
+                                                    onChange={(e) => this.props.changeWishNum(e)}
+                                                    value = {this.props.columns[el].wishNum}
+                                                    size="sm">
+                                         <option value={-1}>Pas un vœu</option>
+                                         {wishNums.map((el)=>{ return <option key={el} value={el}>{el}</option>; })}
+                                       </Form.Control>
+                                     </td>
+                                   </tr>
                         })
                     }
                     </tbody>
