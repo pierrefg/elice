@@ -134,11 +134,11 @@ class App extends Component {
                     <hr/>
                     <CSVReader
                         cssClass="csv-reader-input"
-                        label=<span className="mr-1">Fichier CSV à charger : </span>
-                    onFileLoaded={this.handleData.bind(this)}
-                    onError={this.handleDataError}
-                    parserOptions={{header: true, encoding: "UTF-8"}}
-                    inputId="limeSurvey"
+                        label={<span className="mr-1">Fichier CSV à charger : </span>}
+                        onFileLoaded={this.handleData.bind(this)}
+                        onError={this.handleDataError}
+                        parserOptions={{header: true, encoding: "UTF-8"}}
+                        inputId="limeSurvey"
                     />
                 </Jumbotron>
                 <Row>
