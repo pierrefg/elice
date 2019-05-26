@@ -49,12 +49,12 @@ class App extends Component {
         for (let el in students) {
             wishlist[studentId] = [];
             for (let col in students[el]) {
-                if (this.state.columns[col] == undefined) {
+                if (this.state.columns[col] === undefined) {
                     continue;
                 }
                 if (this.state.columns[col].state === "wish") {
                     let limeSurveyCourseName = students[el][col];
-                    let limeSurveyCourseRank = this.state.columns[col].wishNum
+                    let limeSurveyCourseRank = this.state.columns[col].wishNum;
                     let limeSurveyCourseId = this.state.courses[limeSurveyCourseName].id;
                     wishlist[studentId][limeSurveyCourseId] = limeSurveyCourseRank;
                 }
@@ -67,7 +67,7 @@ class App extends Component {
     affect() {
         let wishlist = this.getStudentsWishList();
 
-        let data = dataHandler.affect(wishlist, this.state.courses);
+        let data = dataHandler.affect(this.state.students, this.state.courses);
         this.setState({students: data});
     }
 

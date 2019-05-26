@@ -66,8 +66,8 @@ class dataHandler {
         return courses;
     }
 
-    static affect(d, courses) {
-        let data = [...d];
+    static affect(data, courses) {
+        data = [...data];
         for (let rowIndex in data) {
             data[rowIndex] = {...data[rowIndex], result: 1};
         }
