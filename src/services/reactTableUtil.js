@@ -23,7 +23,7 @@ class reactTableUtil{
         }
 
         //Adding the affectation mode dropdown field
-        var optionsAffec = [{value:"auto", label:"auto"}]
+        var optionsAffec = [{value:"auto", label:"Automatique"}]
         for(var groupName in groups){
             optionsAffec.push({
                 value: groupName,
@@ -42,7 +42,7 @@ class reactTableUtil{
         //Adding the result column
         result.push({
             dataField: "result",
-            text: "Result",
+            text: "Résultat d'affectation",
             sort: true
         });
         return result

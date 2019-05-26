@@ -46,7 +46,6 @@ class dataHandler{
                 vowCols.push(el);
             }
         }
-        
         let groupId = 0;
         //Find all the possible groups
         for(var rowNum in data){ //Go through all the rows
@@ -65,6 +64,15 @@ class dataHandler{
             }
         }
         return groups;
+    }
+
+    static affect(d, groups){
+        var data = [...d];
+        for (var rowIndex in data) {
+            data[rowIndex].result = 1
+            data[rowIndex] = {...data[rowIndex], result: 1};
+        }
+        return data;
     }
 }
 

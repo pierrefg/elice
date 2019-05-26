@@ -32,10 +32,10 @@ class App extends Component {
     var cols = dataHandler.getColumns(data);
 
     this.setState({
-        columns : cols,
-        groups : [],
-        students : data,
-        rtColumns: reactTableUtil.columnParser(cols, this.state.groups)
+      columns : cols,
+      groups : [],
+      students : data,
+      rtColumns: reactTableUtil.columnParser(cols, this.state.groups)
     });
   }
 
@@ -44,11 +44,9 @@ class App extends Component {
   }
 
   affect(){
-    var data = dataHandler.affect(this.data);
+    var data = dataHandler.affect(this.state.students, this.state.groups);
     console.log("coucou");
-    this.setState({
-      students : data
-    });
+    this.setState({students: data});
   }
 
   changeColumnMode(e){
