@@ -27,7 +27,7 @@ class dataHandler {
         for (let el in data[0]) {
             if (el !== "" && el !== "\n" && el !== "\r\n") {
                 columns[el] = {
-                    state: "ignore", //default/wish/ignore(will not be used)
+                    state: "discard", //display/discard(will not be used)
                     wishNum: -1
                 };
             }

@@ -19,7 +19,7 @@ class Columns extends Component {
         const {open} = this.state;
 
         let wishNums = [];
-        for (let i = 1; i <= this.props.wishCount + 1; i++) {
+        for (let i = 1; i <= this.props.wishCount; i++) {
             wishNums.push(i);
         }
 
@@ -57,9 +57,8 @@ class Columns extends Component {
                                                           onChange={(e) => this.props.changeMode(e)}
                                                           value={this.props.columns[el].state}
                                                           size="sm">
-                                                <option value="default">Défaut</option>
-                                                <option value="ignore">Ignorer</option>
-                                                <option value="wish">Vœu</option>
+                                                <option value="display">Afficher</option>
+                                                <option value="discard">Ignorer</option>
                                             </Form.Control>
                                         </td>
                                         <td>
@@ -67,11 +66,17 @@ class Columns extends Component {
                                                           id={el}
                                                           onChange={(e) => this.props.changeWishNum(e)}
                                                           value={this.props.columns[el].wishNum}
+                                                          disabled={this.props.columns[el].state === "discard"}
                                                           size="sm">
                                                 <option value={-1}>Pas un vœu</option>
-                                                {wishNums.map((el) => {
+                                                {
+                                                  wishNums.map((el) => {
                                                     return <option key={el} value={el}>{el}</option>;
-                                                })}
+                                                  })
+                                                }
+                                                {
+                                                  this.props.columns[el].wishNum === -1 && <option key={this.props.wishCount+1} value={this.props.wishCount+1}>{this.props.wishCount+1}</option>
+                                                }
                                             </Form.Control>
                                         </td>
                                     </tr>

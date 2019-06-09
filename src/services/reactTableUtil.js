@@ -5,7 +5,7 @@ class reactTableUtil{
         let result = [];
         for(let colName in cols){
             let col = cols[colName];
-            if(col.state !== "ignore"){
+            if(col.state !== "discard"){
                 if(col.state === "wish"){
                     result.push({
                         dataField: colName,

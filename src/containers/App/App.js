@@ -77,24 +77,25 @@ class App extends Component {
         let wishCount = this.state.wishCount;
         let columns = {...this.state.columns};
 
-        // Change from wish type
-        if (columns[key].state === "wish") {
-            wishCount--;
-            for (let el in columns) {
-                if (columns[el].wishNum > columns[key].wishNum)
-                    columns[el] = {...columns[el], wishNum: columns[el].wishNum - 1};
-            }
-            columns[key] = {...columns[key], wishNum: -1};
-        }
+        if (value === "discard") {
+            // this.onDeleteWishNum(key);
+            // Not even a wish column ! Nothing to be done
+            if (this.state.columns[key].wishNum !== -1) {
+                // Update the current wish columns count
+                wishCount--;
 
-        //Change to wish type
-        if (value === "wish") {
-            wishCount++;
-            columns[key] = {...columns[key], wishNum: wishCount};
+                // Shift other wish columns' numbers
+                for (let el in columns) {
+                    if (columns[el].wishNum > columns[key].wishNum)
+                        columns[el] = {...columns[el], wishNum: columns[el].wishNum - 1};
+                }
+
+                // Delete the column's wish number
+                columns[key] = {...columns[key], wishNum: -1};
+            }
         }
 
         columns[key] = {...columns[key], state: value};
-
         this.setState({
             columns: columns,
             rtColumns: reactTableUtil.columnParser(columns, this.state.courses),
@@ -110,16 +111,25 @@ class App extends Component {
         let columns = {...this.state.columns};
 
         if (value === -1) {
-            wishCount--;
-            for (let el in columns) {
-                if (columns[el].wishNum > columns[key].wishNum)
-                    columns[el] = {...columns[el], wishNum: columns[el].wishNum - 1};
+            // this.onDeleteWishNum(key);
+            // Not even a wish column ! Nothing to be done
+            if (this.state.columns[key].wishNum !== -1) {
+                // Update the current wish columns count
+                wishCount--;
+
+                // Shift other wish columns' numbers
+                for (let el in columns) {
+                    if (columns[el].wishNum > columns[key].wishNum)
+                        columns[el] = {...columns[el], wishNum: columns[el].wishNum - 1};
+                }
+
+                // Delete the column's wish number
+                columns[key] = {...columns[key], wishNum: -1};
             }
-            columns[key] = {...columns[key], state: "ignore", wishNum: -1};
         } else {
-            if (columns[key].state !== "wish") {
+            if (columns[key].wishNum === -1) {
                 wishCount++;
-                columns[key] = {...columns[key], state: "wish", wishNum: wishCount};
+                columns[key] = {...columns[key], wishNum: wishCount};
             }
 
             for (let el in columns) {
@@ -128,9 +138,9 @@ class App extends Component {
                     break;
                 }
             }
-
-            columns[key] = {...columns[key], wishNum: value};
         }
+
+        columns[key] = {...columns[key], wishNum: value};
 
         this.setState({
             columns: columns,
@@ -139,7 +149,29 @@ class App extends Component {
             courses: dataHandler.getCourses(this.state.students, columns)
         });
     }
+/*
+    onDeleteWishNum(key) {
+        // Not even a wish column ! Nothing to be done
+        if (this.state.columns[key].wishNum === -1) {
+            return;
+        }
 
+        let wishCount = this.state.wishCount;
+        let columns = {...this.state.columns};
+
+       // Update the current wish columns count
+        wishCount--;
+
+        // Shift other wish columns' numbers
+        for (let el in columns) {
+            if (columns[el].wishNum > columns[key].wishNum)
+                columns[el] = {...columns[el], wishNum: columns[el].wishNum - 1};
+        }
+
+        // Delete the column's wish number
+        columns[key] = {...columns[key], wishNum: -1};
+    }
+*/
     loadState() {
 
     }
