@@ -74,7 +74,7 @@ class dataHandler {
 
 
         // Remove old courses
-        for (let course in courses.keys()) {
+        for (let course of courses.keys()) {
             if (!found.has(course))
                 courses.delete(course);
         }
