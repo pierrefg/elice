@@ -207,11 +207,18 @@ class App extends Component {
         return places;
     }
 
+    computePenalties(size) {
+        let penalties = [];
+        for (let i = 0; i < size; i++)
+            penalties[i] = 10*i*i;
+        return penalties;
+    }
+
     affect() {
         let wishMatrix = this.getStudentsWishMatrix();
         let minPlaces = this.getCourseMinPlaces();
         let maxPlaces = this.getCourseMaxPlaces();
-        let penalties = [0, 10, 20, 40, 90, 160];
+        let penalties = this.computePenalties(this.state.courses.size);
 
         let assignments = MunkresApp.process(penalties, minPlaces, maxPlaces, wishMatrix, undefined);
         console.log(MunkresApp.analyze_results(assignments, penalties, minPlaces, maxPlaces, wishMatrix, undefined));

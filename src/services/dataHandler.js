@@ -58,15 +58,17 @@ class dataHandler {
             for (let i in wishCols) { //Go through all the wish columns
                 if (row[wishCols[i]] !== undefined) {
                     found.add(row[wishCols[i]]);
-
-                    if (!courses.has(row[wishCols[i]])) {
-                        courses.set(row[wishCols[i]], {
-                            minPlaces: 40, //Min places in this course
-                            maxPlaces: 50, //Max places in this course
-                            reservedPlaces: 0, //Places spared for other students
-                        });
-                    }
                 }
+            }
+        }
+
+        for (let course of found) {
+            if (!courses.has(course)) {
+                courses.set(course, {
+                    minPlaces: Math.floor(data.length/found.size-5), //Min places in this course
+                    maxPlaces: Math.floor(data.length/found.size+5), //Max places in this course
+                    reservedPlaces: 0, //Places spared for other students
+                });
             }
         }
 
