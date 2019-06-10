@@ -25,11 +25,24 @@ class dataHandler {
     static extractColumns(data) {
         let columns = new Map();
 
-        for (let el in data[0]) {
-            if (el !== "" && el !== "\n" && el !== "\r\n") {
-                columns[el] = {
-                    state: "discard", //information/discard(will not be used)/wish/appeal
-                    wishNum: -1,
+        let wishCount = 1;
+        for (let name in data[0]) {
+            if (name !== "" && name !== "\n" && name !== "\r\n") {
+                let lowercaseName = name.toLowerCase();
+                let state = "discard";  //information/discard(will not be used)/wish/appeal
+                let wishNum = -1;
+                if (lowercaseName.includes("voeux") || lowercaseName.includes("vœux")) {
+                    state = "wish";
+                    wishNum = wishCount++;
+                }
+                else if (lowercaseName.includes("attrait"))
+                    state = "appeal";
+                else if (lowercaseName.includes("nom") || lowercaseName.includes("adresse") || lowercaseName.includes("mail"))
+                    state = "information";
+
+                columns[name] = {
+                    state: state,
+                    wishNum: wishNum,
                     appealNum: -1
                 };
             }

@@ -29,12 +29,20 @@ class App extends Component {
     loadData(data) {
         data = dataHandler.createIds(dataHandler.preProcess(data));
         let columns = dataHandler.extractColumns(data);
-        let rtColumns = reactTableUtil.columnParser(columns, []);
+        let wishCount = 0;
+        for (let name in columns) {
+            if (columns[name].state === "wish") {
+                wishCount++;
+            }
+        }
+
+        let courses = dataHandler.updatedCourses(new Map(), data, columns);
+        let rtColumns = reactTableUtil.columnParser(columns, courses);
 
         this.setState({
-            wishCount: 0,
+            wishCount: wishCount,
             columns: columns,
-            courses: new Map(),
+            courses: courses,
             students: data,
             rtColumns: rtColumns
         });
@@ -226,8 +234,6 @@ class App extends Component {
         let students = [...this.state.students];
 
         let courseNames = Array.from(this.state.courses.keys());
-
-        console.log(courseNames);
 
         for (let studentId in assignments) {
             students[studentId] = {...students[studentId], result: courseNames[assignments[studentId]-1]};
