@@ -92,7 +92,7 @@ class Columns extends Component {
                                                   this.props.columns[el].appealNum === -1 && <option value={-1}>N/A</option>
                                                 }
                                                 {
-                                                  Object.keys(this.props.courses).map((el) => {
+                                                  Array.from(this.props.courses.keys()).map((el) => {
                                                     return <option key={el} value={el}>{el}</option>;
                                                   })
                                                 }
