@@ -103,111 +103,102 @@ class App extends Component {
         this.setState({students: students});
     }
 
+    deletedWishNum(state, key) {
+        // Not even a wish column ! Nothing to be done
+        if (state.columns[key].wishNum === -1) {
+            return state;
+        }
+
+        state = {...state};
+        state.column = {...state.column};
+
+        // Update the current wish columns count
+        state.wishCount--;
+
+        // Shift other wish columns' numbers
+        for (let el in state.columns) {
+            if (state.columns[el].wishNum > state.columns[key].wishNum)
+                state.columns[el] = {...state.columns[el], wishNum: state.columns[el].wishNum - 1};
+        }
+
+        // Delete the column's wish number
+        state.columns[key] = {...state.columns[key], wishNum: -1};
+
+        return state;
+    }
+
     changeColumnMode(e) {
         let value = e.target.value;
         let key = e.target.id;
-        let wishCount = this.state.wishCount;
-        let columns = {...this.state.columns};
+        let state = {...this.state};
+        state.columns = {...state.columns};
 
-        if (value === "discard") {
-            // this.onDeleteWishNum(key);
-            // Not even a wish column ! Nothing to be done
-            if (this.state.columns[key].wishNum !== -1) {
-                // Update the current wish columns count
-                wishCount--;
-
-                // Shift other wish columns' numbers
-                for (let el in columns) {
-                    if (columns[el].wishNum > columns[key].wishNum)
-                        columns[el] = {...columns[el], wishNum: columns[el].wishNum - 1};
-                }
-
-                // Delete the column's wish number
-                columns[key] = {...columns[key], wishNum: -1};
-            }
+        if (value !== "wish") {
+            state = this.deletedWishNum(state, key);
+        } else if (state.columns[key].wishNum === -1) {
+            state.wishCount++;
+            state.columns[key] = {...state.columns[key], wishNum: state.wishCount};
         }
 
-        columns[key] = {...columns[key], state: value};
-        let courses = dataHandler.getCourses(this.state.students, columns);
-        let rtColumns = reactTableUtil.columnParser(columns, courses);
-        this.setState({
-            columns: columns,
-            wishCount: wishCount,
-            courses: courses,
-            rtColumns: rtColumns
-        });
+        if (value !== "appeal") {
+            state.columns[key] = {...state.columns[key], appealNum: -1};
+        }
+
+        state.columns[key] = {...state.columns[key], state: value};
+        state.courses = dataHandler.getCourses(state.students, state.columns);
+        state.rtColumns = reactTableUtil.columnParser(state.columns, state.courses);
+        this.setState(state);
     }
 
     changeColumnWishNum(e) {
         let value = parseInt(e.target.value);
         let key = e.target.id;
-        let wishCount = this.state.wishCount;
-        let columns = {...this.state.columns};
+        let state = {...this.state};
 
         if (value === -1) {
-            // this.onDeleteWishNum(key);
-            // Not even a wish column ! Nothing to be done
-            if (this.state.columns[key].wishNum !== -1) {
-                // Update the current wish columns count
-                wishCount--;
-
-                // Shift other wish columns' numbers
-                for (let el in columns) {
-                    if (columns[el].wishNum > columns[key].wishNum)
-                        columns[el] = {...columns[el], wishNum: columns[el].wishNum - 1};
-                }
-
-                // Delete the column's wish number
-                columns[key] = {...columns[key], wishNum: -1};
-            }
+            state = this.deletedWishNum(state, key);
         } else {
-            if (columns[key].wishNum === -1) {
-                wishCount++;
-                columns[key] = {...columns[key], wishNum: wishCount};
+            if (state.columns[key].wishNum === -1) {
+                state.wishCount++;
+                state.columns[key] = {...state.columns[key], wishNum: state.wishCount};
             }
 
-            for (let el in columns) {
-                if (columns[el].wishNum === value) {
-                    columns[el] = {...columns[el], wishNum: columns[key].wishNum};
+            for (let el in state.columns) {
+                if (state.columns[el].wishNum === value) {
+                    state.columns[el] = {...state.columns[el], wishNum: state.columns[key].wishNum};
                     break;
                 }
             }
         }
 
-        columns[key] = {...columns[key], wishNum: value};
-
-        let courses = dataHandler.getCourses(this.state.students, columns);
-        let rtColumns = reactTableUtil.columnParser(columns, courses);
-        this.setState({
-            columns: columns,
-            wishCount: wishCount,
-            courses: courses,
-            rtColumns: rtColumns
-        });
+        state.columns[key] = {...state.columns[key], wishNum: value};
+        state.courses = dataHandler.getCourses(state.students, state.columns);
+        state.rtColumns = reactTableUtil.columnParser(state.columns, state.courses);
+        this.setState(state);
     }
-/*
-    onDeleteWishNum(key) {
-        // Not even a wish column ! Nothing to be done
-        if (this.state.columns[key].wishNum === -1) {
-            return;
+
+    changeColumnAppealNum(e) {
+        let value = e.target.value;
+        let key = e.target.id;
+        let state = {...this.state};
+
+        if (value === -1) {
+            state = this.deletedAppealNum(state, key);
+        } else {
+            for (let el in state.columns) {
+                if (state.columns[el].appealNum === value) {
+                    state.columns[el] = {...state.columns[el], appealNum: state.columns[key].appealNum};
+                    break;
+                }
+            }
         }
 
-        let wishCount = this.state.wishCount;
-        let columns = {...this.state.columns};
-
-       // Update the current wish columns count
-        wishCount--;
-
-        // Shift other wish columns' numbers
-        for (let el in columns) {
-            if (columns[el].wishNum > columns[key].wishNum)
-                columns[el] = {...columns[el], wishNum: columns[el].wishNum - 1};
-        }
-
-        // Delete the column's wish number
-        columns[key] = {...columns[key], wishNum: -1};
+        state.columns[key] = {...state.columns[key], appealNum: value};
+        state.courses = dataHandler.getCourses(state.students, state.columns);
+        state.rtColumns = reactTableUtil.columnParser(state.columns, state.courses);
+        this.setState(state);
     }
-*/
+
     loadState() {
 
     }
@@ -235,8 +226,12 @@ class App extends Component {
                 </Jumbotron>
                 <Row>
                     <Col>
-                        <Columns wishCount={this.state.wishCount} changeMode={this.changeColumnMode.bind(this)}
-                                 changeWishNum={this.changeColumnWishNum.bind(this)} columns={this.state.columns}/>
+                        <Columns wishCount={this.state.wishCount}
+                                 courses={this.state.courses}
+                                 columns={this.state.columns}
+                                 changeMode={this.changeColumnMode.bind(this)}
+                                 changeWishNum={this.changeColumnWishNum.bind(this)}
+                                 changeAppealNum={this.changeColumnAppealNum.bind(this)}/>
                     </Col>
                     <Col>
                         <Courses courses={this.state.courses} /*loadData = {this.loadData.bind(this)}*//>

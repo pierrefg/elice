@@ -25,7 +25,7 @@ class Columns extends Component {
 
         return (
             <div>
-                <h2><span>Colonnes</span>
+                <h2><span>Liaison des données</span>
                     <Button
                         variant="secondary"
                         onClick={() => this.setState({open: !open})}
@@ -43,7 +43,8 @@ class Columns extends Component {
                             <tr>
                                 <th>Colonnes</th>
                                 <th>Mode</th>
-                                <th>Vœu n°</th>
+                                <th>Rang du Voeu</th>
+                                <th>Attrait du Module</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -54,28 +55,46 @@ class Columns extends Component {
                                         <td>
                                             <Form.Control as="select"
                                                           id={el}
-                                                          onChange={(e) => this.props.changeMode(e)}
+                                                          onChange={this.props.changeMode}
                                                           value={this.props.columns[el].state}
                                                           size="sm">
-                                                <option value="display">Afficher</option>
                                                 <option value="discard">Ignorer</option>
+                                                <option value="wish">Voeu</option>
+                                                <option value="appeal">Attrait</option>
+                                                <option value="information">Information</option>
                                             </Form.Control>
                                         </td>
                                         <td>
                                             <Form.Control as="select"
                                                           id={el}
-                                                          onChange={(e) => this.props.changeWishNum(e)}
+                                                          onChange={this.props.changeWishNum}
                                                           value={this.props.columns[el].wishNum}
-                                                          disabled={this.props.columns[el].state === "discard"}
+                                                          disabled={this.props.columns[el].state !== "wish"}
                                                           size="sm">
-                                                <option value={-1}>Pas un vœu</option>
+                                                {
+                                                  this.props.columns[el].wishNum === -1 && <option value={-1}>N/A</option>
+                                                }
                                                 {
                                                   wishNums.map((el) => {
                                                     return <option key={el} value={el}>{el}</option>;
                                                   })
                                                 }
+                                            </Form.Control>
+                                        </td>
+                                        <td>
+                                            <Form.Control as="select"
+                                                          id={el}
+                                                          onChange={this.props.changeAppealNum}
+                                                          value={this.props.columns[el].appealNum}
+                                                          disabled={this.props.columns[el].state !== "appeal"}
+                                                          size="sm">
                                                 {
-                                                  this.props.columns[el].wishNum === -1 && <option key={this.props.wishCount+1} value={this.props.wishCount+1}>{this.props.wishCount+1}</option>
+                                                  this.props.columns[el].appealNum === -1 && <option value={-1}>N/A</option>
+                                                }
+                                                {
+                                                  Object.keys(this.props.courses).map((el) => {
+                                                    return <option key={el} value={el}>{el}</option>;
+                                                  })
                                                 }
                                             </Form.Control>
                                         </td>
