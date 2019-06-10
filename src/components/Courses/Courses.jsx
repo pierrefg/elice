@@ -28,20 +28,20 @@ class CourseTile extends Component {
                 <b>{this.props.name}</b><br/>
                 <Form id={this.props.name}>
                     <Form.Group as={Row} className="mb-0" controlId="">
-                        <Form.Label column sm="8" className="py-0 mt-auto">Nombre minimum d'étudiants&nbsp;:</Form.Label>
-                        <Col sm="4">
+                        <Form.Label column sm="9" className="py-0 mt-auto">Nombre minimum d'étudiants&nbsp;:</Form.Label>
+                        <Col sm="3">
                             <Form.Control size="sm" type="number" name="min" onChange={this.props.changePlaces} value={this.props.infos.minPlaces} />
                         </Col>
                     </Form.Group>
                     <Form.Group as={Row} className="mb-0">
-                        <Form.Label column sm="8" className="py-0 mt-auto">Nombre maximum d'étudiants&nbsp;:</Form.Label>
-                        <Col sm="4">
+                        <Form.Label column sm="9" className="py-0 mt-auto">Nombre maximum d'étudiants&nbsp;:</Form.Label>
+                        <Col sm="3">
                             <Form.Control size="sm" type="number" name="max" onChange={this.props.changePlaces} value={this.props.infos.maxPlaces} />
                         </Col>
                     </Form.Group>
                     <Form.Group as={Row} className="mb-0">
-                        <Form.Label column sm="8" className="py-0 mt-auto">Nombre de places réservées&nbsp;:</Form.Label>
-                        <Col sm="4">
+                        <Form.Label column sm="9" className="py-0 mt-auto">Nombre de places réservées&nbsp;:</Form.Label>
+                        <Col sm="3">
                             <Form.Control size="sm" type="number" name="reserved" onChange={this.props.changePlaces} value={this.props.infos.reservedPlaces} />
                         </Col>
                     </Form.Group>
