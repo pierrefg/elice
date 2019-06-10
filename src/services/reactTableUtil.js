@@ -23,7 +23,7 @@ class reactTableUtil{
         }
 
         //Adding the affectation mode dropdown field
-        let optionsAffec = [{value: "auto", label: "Automatique"}];
+        let optionsAffec = [{value: "Automatique", label: "Automatique"}];
         for (let courseName in courses) {
             optionsAffec.push({
                 value: courseName,
@@ -31,7 +31,7 @@ class reactTableUtil{
             });
         }
         result.push({
-            dataField: 'affecMode',
+            dataField: 'affectMode',
             text: "Mode d'affectation",
             editor: {
                         type: Type.SELECT,

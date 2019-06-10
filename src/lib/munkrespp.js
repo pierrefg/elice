@@ -221,6 +221,7 @@
  *
  */
 
+import computeMunkres from "munkres-js";
 
 // return the sum of the values of an array 
 // example : arrSum([20, 10, 5, 10]) -> 45
@@ -229,479 +230,476 @@ const arrSum = arr => arr.reduce((a,b) => a + b, 0)
 const INF = 999999999;
 
 
+class MunkressApp {
 
-/**
- * [Preprocessing]
- * create square matrix containing the penalties of each student for each wish.
- * @param {!Array<Array<int>>} wish_matrix is a matrix, each row is a student,
- *      each column is a course, each value is the rank of the course in the
- *      wish list of the student. The values are in [1 ; number of courses]
- * @param {!Array<Array<int>>} interest_matrix is a matrix, each row is a
- *      student, each column is a course, each value is the interest of the
- *      student for the course. The values are in: { 
- *        -2 (not interesting at all);
- *        -1 (not really interesting);
- *         1 (interesting);
- *         2 (very interesting)
- *      }
- * @param {!Array<int>} wish_penalties represents the penalties while assigning
- *      a student to one of its wishs
- * @param {!Array<int>} wish_min_places is the minimum number of students we
- *      must have for each wish
- * @param {!Array<int>} wish_max_places is the maximum number of students we
- *      can have for each wish
- * @return {!Array<Array<int>>} this matrix can be used as an input for the
- *      munkres algorithm
- */
-function create_square_matrix(
-    wish_matrix,
-    interest_matrix,
-    wish_penalties, 
-    wish_min_places, 
-    wish_max_places
-) {
-    let new_matrix = new Array();
-    let students_number = wish_matrix.length;
-    let wishes_number = wish_penalties.length;
-    let total_places = arrSum(wish_max_places);
-    
-    for (let student_i=0; student_i<students_number; student_i++) {
-      let student_penalties = new Array();
-      for (let wish_j=0; wish_j<wishes_number; wish_j++) {
-        let wish_rank = wish_matrix[ student_i ][ wish_j ];
-        let wish_interest = interest_matrix[ student_i ][ wish_j ];
-        let penalty = wish_penalties[ wish_rank - 1 ];
-        let next_penalty = 0;
-        
-        if (wish_rank < wish_penalties.lengh) {
-          next_penalty = wish_penalties[ wish_rank ];
+    /**
+     * [Preprocessing]
+     * create square matrix containing the penalties of each student for each wish.
+     * @param {!Array<Array<int>>} wish_matrix is a matrix, each row is a student,
+     *      each column is a course, each value is the rank of the course in the
+     *      wish list of the student. The values are in [1 ; number of courses]
+     * @param {!Array<Array<int>>} interest_matrix is a matrix, each row is a
+     *      student, each column is a course, each value is the interest of the
+     *      student for the course. The values are in: {
+     *        -2 (not interesting at all);
+     *        -1 (not really interesting);
+     *         1 (interesting);
+     *         2 (very interesting)
+     *      }
+     * @param {!Array<int>} wish_penalties represents the penalties while assigning
+     *      a student to one of its wishs
+     * @param {!Array<int>} wish_min_places is the minimum number of students we
+     *      must have for each wish
+     * @param {!Array<int>} wish_max_places is the maximum number of students we
+     *      can have for each wish
+     * @return {!Array<Array<int>>} this matrix can be used as an input for the
+     *      munkres algorithm
+     */
+
+    static create_square_matrix(
+        wish_matrix,
+        interest_matrix,
+        wish_penalties,
+        wish_min_places,
+        wish_max_places
+    ) {
+        let new_matrix = [];
+        let students_number = wish_matrix.length;
+        let wishes_number = wish_penalties.length;
+        let total_places = arrSum(wish_max_places);
+
+        for (let student_i = 0; student_i < students_number; student_i++) {
+            let student_penalties = [];
+            for (let wish_j = 0; wish_j < wishes_number; wish_j++) {
+                let wish_rank = wish_matrix[student_i][wish_j];
+                let wish_interest = interest_matrix[student_i][wish_j];
+                let penalty = wish_penalties[wish_rank - 1];
+                let next_penalty = 0;
+
+                if (wish_rank < wish_penalties.lengh) {
+                    next_penalty = wish_penalties[wish_rank];
+                } else {
+                    next_penalty = 2 * penalty;
+                }
+
+                // Lagrange interpolation we cas use instead of the switch bloc
+                // coef = −0.0283333x^3 + 0.00166667x^2 − 0.136667x + 0.493333
+                let coef = 0;
+                switch (wish_interest) {
+                    case -2:
+                        coef = 1;
+                        break;
+
+                    case -1:
+                        coef = 0.66;
+                        break;
+
+                    case 1:
+                        coef = 0.33;
+                        break;
+
+                    case 2:
+                        coef = 0;
+                        break;
+
+                    default:
+                        coef = 0;
+                        console.log("Invalid value for wish interest !\n"
+                            + "Wish interest value must be in:\n"
+                            + "(very interesting : 2,\n"
+                            + " interesting : 1,\n"
+                            + " not really interesting : -1,\n"
+                            + " not interesting at all : -2)");
+                        break;
+                }
+                penalty += Math.round(coef * (next_penalty - penalty));
+
+                let places = wish_max_places[wish_j];
+                for (let _ = 0; _ < places; _++) {
+                    student_penalties.push(penalty);
+                }
+            }
+            new_matrix.push(student_penalties)
+        }
+
+        // add phantom students
+        for (let i = students_number; i < total_places; i++) {
+            let student_penalties = [];
+            for (let wish_j = 0; wish_j < wishes_number; wish_j++) {
+                for (let place_k = 0; place_k < wish_min_places[wish_j]; place_k++) {
+                    student_penalties.push(INF);
+                }
+                for (let place_k = 0;
+                     place_k < wish_max_places[wish_j] - wish_min_places[wish_j];
+                     place_k++
+                ) {
+                    student_penalties.push(0);
+                }
+            }
+            new_matrix.push(student_penalties);
+        }
+
+        return new_matrix;
+    }
+
+
+    /**
+     * [Preprocessing]
+     * create square matrix containing the penalties of each student for each wish.
+     * @param {!Array<Array<int>>} wish_matrix is a matrix, each row is a student,
+     *      each column is a course, each value is the rank of the course in the
+     *      wish list of the student. The values are in [1 ; number of courses]
+     * @param {!Array<int>} wish_penalties represents the penalties while assigning
+     *      a student to one of its wishs
+     * @param {!Array<int>} wish_min_places is the minimum number of students we
+     *      must have for each wish
+     * @param {!Array<int>} wish_max_places is the maximum number of students we
+     *      can have for each wish
+     * @return {!Array<Array<int>>} this matrix can be used as an input for the
+     *      munkres algorithm
+     */
+    static create_square_matrix_without_interests(
+        wish_matrix,
+        wish_penalties,
+        wish_min_places,
+        wish_max_places
+    ) {
+        let new_matrix = [];
+        let students_number = wish_matrix.length;
+        let wishes_number = wish_penalties.length;
+        let total_places = arrSum(wish_max_places);
+
+        for (let student_i = 0; student_i < students_number; student_i++) {
+            let student_penalties = [];
+            for (let wish_j = 0; wish_j < wishes_number; wish_j++) {
+                let wish_rank = wish_matrix[student_i][wish_j];
+                let penalty = wish_penalties[wish_rank - 1];
+
+                let places = wish_max_places[wish_j];
+                for (let _ = 0; _ < places; _++) {
+                    student_penalties.push(penalty);
+                }
+            }
+            new_matrix.push(student_penalties)
+        }
+
+        // add phantom students
+        for (let i = students_number; i < total_places; i++) {
+            let student_penalties = [];
+            for (let wish_j = 0; wish_j < wishes_number; wish_j++) {
+                for (let place_k = 0; place_k < wish_min_places[wish_j]; place_k++) {
+                    student_penalties.push(INF);
+                }
+                for (let place_k = 0;
+                     place_k < wish_max_places[wish_j] - wish_min_places[wish_j];
+                     place_k++
+                ) {
+                    student_penalties.push(0);
+                }
+            }
+            new_matrix.push(student_penalties);
+        }
+
+        return new_matrix;
+    }
+
+
+    /**
+     * generate a random wish matrix and a random interest matrix
+     * @param {!int} students_number is the number of rows the matrix will have
+     * @param {!int} wish_number is the number of columns the matrix will have
+     * @return {!Object} a dictionnary containing the wish matrix
+     *      and the interest matrix
+     */
+    static generate_random_matrix(students_number, wish_number) {
+        let wish_matrix = [];
+        let interest_matrix = [];
+        for (let student_i = 0; student_i < students_number; student_i++) {
+            let arr = [];
+            for (let wish_j = 0; wish_j < wish_number; wish_j++) {
+                arr.push(Math.floor(Math.random() * wish_number) + 1);
+            }
+            wish_matrix.push(arr);
+            interest_matrix.push(new Array(wish_number).fill(-1));
+        }
+        return {"wish": wish_matrix, "interest": interest_matrix};
+    }
+
+
+    /**
+     * [Postprocessing]
+     * extract the wish_index (1 indexation) of the students' places
+     * @param {!Array<Array<int>>} indexes is an array of arrays with a length of 2
+     *      the first value is the index of the student (0 indexation)
+     *      the second value is the index of the place (0 indexation)
+     * @param {!Array<int>} wish_max_places is the maximum number of students we
+     *      can have for each wish
+     * @return {!Array<int>}
+     *      the index of the array is the index of the student (0 indexation)
+     *      the value is the index of the wish (the course) (1 indexation)
+     */
+    static extract_assignments(indexes, wish_max_places) {
+        let assignments = [];
+        let wishes_number = wish_max_places.length;
+
+        // wish_range contain the global index of the first place of each course
+        // example: places=[10, 20, 5] - wish_range=[0, 10, 30]
+        let wish_range = new Array(wishes_number).fill(0);
+        let index = 0;
+        for (let wish_i = 0; wish_i < wishes_number; wish_i++) {
+            wish_range[wish_i] = index;
+            index += wish_max_places[wish_i];
+        }
+
+        for (let i = 0; i < indexes.length; i++) {
+            let wish_i = 0;
+            while (wish_i < wishes_number && indexes[i][1] >= wish_range[wish_i]) {
+                wish_i += 1;
+            }
+            assignments.push(wish_i); // 1 indexation
+        }
+        return assignments;
+    }
+
+
+    /**
+     * this function performs some statistics about
+     *      the assignments made with the munkres algorithm.
+     * @param {!Array<int>} assignments
+     *      the index of the array is the index of the student (0 indexation)
+     *      the value is the index of the wish (the course) (1 indexation)
+     * @param {!Array<int>} wish_penalties represents the penalties while assigning
+     *      a student to one of its wishs
+     * @param {!Array<int>} wish_min_places is the minimum number of students we
+     *      must have for each wish
+     * @param {!Array<int>} wish_max_places is the maximum number of students we
+     *      can have for each wish
+     * @param {!Array<Array<int>>} wish_matrix is a matrix, each row is a student,
+     *      each column is a course, each value is the rank of the course in the
+     *      wish list of the student. The values are in [1 ; number of courses]
+     * @param {Array<Array<int>>} interest_matrix is a matrix, each row is a
+     *      student, each column is a course, each value is the interest of the
+     *      student for the course. The values are in: {
+     *        -2 (not interesting at all);
+     *        -1 (not really interesting);
+     *         1 (interesting);
+     *         2 (very interesting)
+     *      }
+     *      This parameter is optionnal.
+     * @return {!Object} a dictionnary which contains different statistics about
+     *      the assignments made with the munkres algorithm.
+     *      This is the structure of the result:
+     *      {
+     *        "penalty1": int, // the global penalty without the interests
+     *        "penalty2": int, // the global penalty with the interests
+     *        "students": [
+     *          {
+     *            "assignment": int, //the course to which the student is assigned
+     *            "wish_rank": int, // the rank of the wish
+     *            "interest": int, // the interest of the student for the course
+     *            "penalty1": int, // the penalty without the interest
+     *            "penalty2": int, // the penalty with the interest
+     *          },
+     *          ...
+     *        ],
+     *        "courses": [
+     *          {
+     *            "students": int, // number of students assigned to the course
+     *            1: int, // number of students who put the course as their
+     *                    // first wish and were assigned to the course
+     *            ...
+     *          },
+     *          ...
+     *        ],
+     *        "wishes": {
+     *          1: int, // number of students who got their first wish
+     *          ...
+     *        }
+     *      }
+     *      If the interests are disabled (no attribute interest_matrix),
+     *      penalty2 will not appear in the result.
+     */
+     static analyze_results(
+        assignments,
+        wish_penalties,
+        wish_min_places,
+        wish_max_places,
+        wish_matrix,
+        interest_matrix
+    ) {
+        let students_number = wish_matrix.length;
+        let wishes_number = wish_penalties.length;
+        let interests_enabled = (typeof interest_matrix !== 'undefined');
+
+        let results = {
+            "penalty1": 0,
+            "students": [],
+            "courses": [],
+            "wishes": {}
+        };
+        if (interests_enabled) {
+            results["penalty2"] = 0;
+        }
+
+        for (let i = 0; i < wishes_number; i++) {
+            results["courses"].push({
+                "students": 0,
+                "penalty1": 0
+            });
+            if (interests_enabled) {
+                results["courses"][i]["penalty2"] = 0;
+            }
+        }
+
+        for (let i = 0; i < students_number; i++) {
+            let assignment = assignments[i];
+            let wish_rank = wish_matrix[i][assignment - 1];
+            let penalty1 = wish_penalties[wish_rank - 1];
+
+            results["penalty1"] += penalty1;
+            results["students"].push({
+                "assignment": assignment,
+                "wish_rank": wish_rank,
+                "penalty1": penalty1
+            });
+
+            if (wish_rank in results["wishes"]) {
+                results["wishes"][wish_rank] += 1;
+            } else {
+                results["wishes"][wish_rank] = 1;
+            }
+
+            results["courses"][assignment - 1]["students"] += 1;
+            results["courses"][assignment - 1]["penalty1"] += penalty1;
+            if (wish_rank in results["courses"][assignment - 1]) {
+                results["courses"][assignment - 1][wish_rank] += 1;
+            } else {
+                results["courses"][assignment - 1][wish_rank] = 1;
+            }
+
+
+            if (interests_enabled) {
+                let interest = interest_matrix[i][assignment - 1];
+                let penalty2 = penalty1;
+
+                let next_penalty = 0;
+                if (wish_rank < wish_penalties.lengh) {
+                    next_penalty = wish_penalties[wish_rank];
+                } else {
+                    next_penalty = 2 * penalty1;
+                }
+                let coef = 0;
+                switch (interest) {
+                    case -2:
+                        coef = 1;
+                        break;
+
+                    case -1:
+                        coef = 0.66;
+                        break;
+
+                    case 1:
+                        coef = 0.33;
+                        break;
+
+                    case 2:
+                        coef = 0;
+                        break;
+
+                    default:
+                        coef = 0;
+                        console.log("Invalid value for wish interest !\n"
+                            + "Wish interest value must be in:\n"
+                            + "(very interesting : 2,\n"
+                            + " interesting : 1,\n"
+                            + " not really interesting : -1,\n"
+                            + " not interesting at all : -2)");
+                        break;
+                }
+                penalty2 += Math.round(coef * (next_penalty - penalty1));
+
+                results["penalty2"] += penalty2;
+                results["students"][i]["penalty2"] = penalty2;
+                results["students"][i]["interest"] = interest;
+                results["courses"][assignment - 1]["penalty2"] += penalty2;
+            }
+
+        }
+
+        return results;
+    }
+
+
+    /**
+     * run the munkres algorithm and does some postprocessing on the results.
+     * @param {!Array<int>} wish_penalties represent the penalties while assigning
+     *      a student to one of its wishs
+     * @param {!Array<int>} wish_min_places is the minimum number of students we
+     *      must have for each wish
+     * @param {!Array<int>} wish_max_places is the maximum number of students we
+     *      can have for each wish
+     * @param {!Array<Array<int>>} wish_matrix is a matrix, each row is a student,
+     *      each column is a course, each value is the rank of the course in the
+     *      wish list of the student. The values are in [1 ; number of courses]
+     * @param {Array<Array<int>>} interest_matrix is a matrix, each row is a
+     *      student, each column is a course, each value is the interest of the
+     *      student for the course. The values are in: {
+     *        -2 (not interesting at all);
+     *        -1 (not really interesting);
+     *         1 (interesting);
+     *         2 (very interesting)
+     *      }
+     *      This parameter is optionnal.
+     * @return {!Array<int>}
+     *      the index of the array is the index of the student (0 indexation)
+     *      the value is the index of the wish (the course) (1 indexation)
+     */
+    static process(
+        wish_penalties,
+        wish_min_places,
+        wish_max_places,
+        wish_matrix,
+        interest_matrix
+    ) {
+        // testing the preconditions
+        let students_number = wish_matrix.length;
+        let total_min_places = arrSum(wish_min_places);
+        let total_max_places = arrSum(wish_max_places);
+        if (students_number > total_max_places) {
+            console.log("The number of students must be lower or equal than the "
+                + "sum of the places.");
+            throw Error("too much students");
+        }
+        if (students_number < total_min_places) {
+            console.log("The number of students must be greater or equal than the "
+                + "sum of the minimum number of students for each course.");
+            throw Error("too few students");
+        }
+
+        let matrix;
+        if (typeof interest_matrix !== 'undefined') {
+            matrix = this.create_square_matrix(wish_matrix,
+                interest_matrix,
+                wish_penalties,
+                wish_min_places,
+                wish_max_places);
         } else {
-          next_penalty = 2*penalty;
+            matrix = this.create_square_matrix_without_interests(wish_matrix,
+                wish_penalties,
+                wish_min_places,
+                wish_max_places);
         }
-        
-        // Lagrange interpolation we cas use instead of the switch bloc
-        // coef = −0.0283333x^3 + 0.00166667x^2 − 0.136667x + 0.493333
-        let coef = 0;
-        switch (wish_interest) {
-          case -2:
-            coef = 1;
-            break;
-            
-          case -1:
-            coef = 0.66;
-            break;
-          
-          case 1:
-            coef = 0.33;
-            break;
-          
-          case 2:
-            coef = 0;
-            break;
-            
-          default:
-            coef = 0;
-            console.log("Invalid value for wish interest !\n"
-                + "Wish interest value must be in:\n"
-                + "(very interesting : 2,\n"
-                + " interesting : 1,\n"
-                + " not really interesting : -1,\n"
-                + " not interesting at all : -2)");
-            break;
-        }
-        penalty += Math.round( coef*(next_penalty - penalty) ) ;
-            
-        let places = wish_max_places[ wish_j ];
-        for (let _=0; _<places; _++) {
-          student_penalties.push( penalty );
-        }
-      }
-      new_matrix.push( student_penalties )
-    }
-    
-    // add phantom students
-    for (let i = students_number; i<total_places; i++) {
-      let student_penalties = new Array();
-      for (let wish_j=0; wish_j<wishes_number; wish_j++) {
-        for (let place_k=0; place_k < wish_min_places[wish_j]; place_k++) {
-          student_penalties.push(INF);
-        }
-        for (let place_k=0;
-            place_k < wish_max_places[wish_j] - wish_min_places[wish_j];
-            place_k++
-        ) {
-          student_penalties.push(0);
-        }
-      }
-      new_matrix.push( student_penalties );
+
+        let indices = computeMunkres(matrix);
+
+        let assignments = this.extract_assignments(indices, wish_max_places);
+        // remove the phantom students
+        assignments = assignments.slice(0, students_number);
+
+        return assignments;
     }
 
-    return new_matrix;
 }
-
-
-
-/**
- * [Preprocessing]
- * create square matrix containing the penalties of each student for each wish.
- * @param {!Array<Array<int>>} wish_matrix is a matrix, each row is a student,
- *      each column is a course, each value is the rank of the course in the
- *      wish list of the student. The values are in [1 ; number of courses]
- * @param {!Array<int>} wish_penalties represents the penalties while assigning
- *      a student to one of its wishs
- * @param {!Array<int>} wish_min_places is the minimum number of students we
- *      must have for each wish
- * @param {!Array<int>} wish_max_places is the maximum number of students we
- *      can have for each wish
- * @return {!Array<Array<int>>} this matrix can be used as an input for the
- *      munkres algorithm
- */
-function create_square_matrix_without_interests(
-    wish_matrix,
-    wish_penalties, 
-    wish_min_places, 
-    wish_max_places
-) {
-    let new_matrix = new Array();
-    let students_number = wish_matrix.length;
-    let wishes_number = wish_penalties.length;
-    let total_places = arrSum(wish_max_places);
-    
-    for (let student_i=0; student_i<students_number; student_i++) {
-      let student_penalties = new Array();
-      for (let wish_j=0; wish_j<wishes_number; wish_j++) {
-        let wish_rank = wish_matrix[ student_i ][ wish_j ];
-        let penalty = wish_penalties[ wish_rank - 1 ];
-            
-        let places = wish_max_places[ wish_j ];
-        for (let _=0; _<places; _++) {
-          student_penalties.push( penalty );
-        }
-      }
-      new_matrix.push( student_penalties )
-    }
-    
-    // add phantom students
-    for (let i = students_number; i<total_places; i++) {
-      let student_penalties = new Array();
-      for (let wish_j=0; wish_j<wishes_number; wish_j++) {
-        for (let place_k=0; place_k < wish_min_places[wish_j]; place_k++) {
-          student_penalties.push(INF);
-        }
-        for (let place_k=0;
-            place_k < wish_max_places[wish_j] - wish_min_places[wish_j];
-            place_k++
-        ) {
-          student_penalties.push(0);
-        }
-      }
-      new_matrix.push( student_penalties );
-    }
-
-    return new_matrix;
-}
-
-
-
-/**
- * generate a random wish matrix and a random interest matrix
- * @param {!int} students_number is the number of rows the matrix will have
- * @param {!int} wish_number is the number of columns the matrix will have
- * @return {!Object} a dictionnary containing the wish matrix
- *      and the interest matrix
- */
-function generate_random_matrix(students_number, wish_number) {
-    wish_matrix = [];
-    interest_matrix = [];
-    for (let student_i=0; student_i<students_number; student_i++) {
-      arr = [];
-      for (let wish_j=0; wish_j<wish_number; wish_j++) {
-        arr.push( Math.floor(Math.random() * wish_number) + 1 );
-      }
-      wish_matrix.push(arr);
-      interest_matrix.push( new Array(wish_number).fill(-1) );
-    }
-    return {"wish": wish_matrix, "interest": interest_matrix};
-}
-
-
-
-/**
- * [Postprocessing]
- * extract the wish_index (1 indexation) of the students' places
- * @param {!Array<Array<int>>} indexes is an array of arrays with a length of 2
- *      the first value is the index of the student (0 indexation)
- *      the second value is the index of the place (0 indexation)
- * @param {!Array<int>} wish_max_places is the maximum number of students we
- *      can have for each wish
- * @return {!Array<int>}
- *      the index of the array is the index of the student (0 indexation)
- *      the value is the index of the wish (the course) (1 indexation)
- */
-function extract_assignments(indexes, wish_max_places) {
-    let assignments = [];
-    let wishes_number = wish_max_places.length;
-    
-    // wish_range contain the global index of the first place of each course
-    // example: places=[10, 20, 5] - wish_range=[0, 10, 30]
-    let wish_range = new Array(wishes_number).fill(0);
-    let index = 0;
-    for (let wish_i=0; wish_i<wishes_number; wish_i++) {
-      wish_range[wish_i] = index;
-      index += wish_max_places[wish_i];
-    }
-    
-    for (let i=0; i<indexes.length; i++) {
-      let wish_i = 0
-      while ( wish_i < wishes_number && indexes[i][1] >= wish_range[wish_i] ) {
-        wish_i += 1;
-      }
-      assignments.push( wish_i ); // 1 indexation
-    }
-    return assignments;
-}
-
-
-
-/**
- * this function performs some statistics about
- *      the assignments made with the munkres algorithm.
- * @param {!Array<int>} assignments
- *      the index of the array is the index of the student (0 indexation)
- *      the value is the index of the wish (the course) (1 indexation)
- * @param {!Array<int>} wish_penalties represents the penalties while assigning
- *      a student to one of its wishs
- * @param {!Array<int>} wish_min_places is the minimum number of students we
- *      must have for each wish
- * @param {!Array<int>} wish_max_places is the maximum number of students we
- *      can have for each wish
- * @param {!Array<Array<int>>} wish_matrix is a matrix, each row is a student,
- *      each column is a course, each value is the rank of the course in the
- *      wish list of the student. The values are in [1 ; number of courses]
- * @param {Array<Array<int>>} interest_matrix is a matrix, each row is a
- *      student, each column is a course, each value is the interest of the
- *      student for the course. The values are in: { 
- *        -2 (not interesting at all);
- *        -1 (not really interesting);
- *         1 (interesting);
- *         2 (very interesting)
- *      }
- *      This parameter is optionnal.
- * @return {!Object} a dictionnary which contains different statistics about
- *      the assignments made with the munkres algorithm.
- *      This is the structure of the result:
- *      {
- *        "penalty1": int, // the global penalty without the interests 
- *        "penalty2": int, // the global penalty with the interests
- *        "students": [
- *          {
- *            "assignment": int, //the course to which the student is assigned
- *            "wish_rank": int, // the rank of the wish
- *            "interest": int, // the interest of the student for the course
- *            "penalty1": int, // the penalty without the interest
- *            "penalty2": int, // the penalty with the interest
- *          },
- *          ... 
- *        ],
- *        "courses": [
- *          {
- *            "students": int, // number of students assigned to the course
- *            1: int, // number of students who put the course as their
- *                    // first wish and were assigned to the course
- *            ...
- *          },
- *          ...
- *        ],
- *        "wishes": {
- *          1: int, // number of students who got their first wish
- *          ...
- *        }
- *      }
- *      If the interests are disabled (no attribute interest_matrix),
- *      penalty2 will not appear in the result.
- */
-function analyze_results(
-    assignments,
-    wish_penalties,
-    wish_min_places,
-    wish_max_places,
-    wish_matrix,
-    interest_matrix
-) {
-    let students_number = wish_matrix.length;
-    let wishes_number = wish_penalties.length;
-    let interests_enabled = (typeof interest_matrix !== 'undefined');
-    
-    let results = {
-      "penalty1": 0,
-      "students": [],
-      "courses": [],
-      "wishes": {}
-    };
-    if (interests_enabled) {
-      results["penalty2"] = 0;
-    }
-    
-    for (var i=0; i<wishes_number; i++) {
-      results["courses"].push({
-        "students": 0,
-        "penalty1": 0
-      });
-      if (interests_enabled) {
-        results["courses"][i]["penalty2"] = 0;
-      }
-    }
-    
-    for (var i=0; i<students_number; i++) {
-      let assignment = assignments[i];
-      let wish_rank = wish_matrix[i][assignment-1];
-      let penalty1 = wish_penalties[wish_rank-1];
-      
-      results["penalty1"] += penalty1;
-      results["students"].push({
-        "assignment": assignment,
-        "wish_rank": wish_rank,
-        "penalty1": penalty1
-      });
-      
-      if (wish_rank in results["wishes"]) {
-        results["wishes"][wish_rank] += 1;
-      } else {
-        results["wishes"][wish_rank] = 1;
-      }
-      
-      results["courses"][assignment-1]["students"] += 1;
-      results["courses"][assignment-1]["penalty1"] += penalty1;
-      if (wish_rank in results["courses"][assignment-1]) {
-        results["courses"][assignment-1][wish_rank] += 1;
-      } else {
-        results["courses"][assignment-1][wish_rank] = 1;
-      }
-      
-      
-      if (interests_enabled) {
-        let interest = interest_matrix[i][assignment-1];
-        let penalty2 = penalty1;
-      
-        let next_penalty = 0;
-        if (wish_rank < wish_penalties.lengh) {
-          next_penalty = wish_penalties[ wish_rank ];
-        } else {
-          next_penalty = 2*penalty1;
-        }
-        let coef = 0;
-        switch (interest) {
-          case -2:
-            coef = 1;
-            break;
-              
-          case -1:
-            coef = 0.66;
-            break;
-            
-          case 1:
-            coef = 0.33;
-            break;
-            
-          case 2:
-            coef = 0;
-            break;
-              
-          default:
-            coef = 0;
-            console.log("Invalid value for wish interest !\n"
-                + "Wish interest value must be in:\n"
-                + "(very interesting : 2,\n"
-                + " interesting : 1,\n"
-                + " not really interesting : -1,\n"
-                + " not interesting at all : -2)");
-            break;
-        }
-        penalty2 += Math.round( coef*(next_penalty - penalty1) ) ;
-        
-        results["penalty2"] += penalty2;
-        results["students"][i]["penalty2"] = penalty2;
-        results["students"][i]["interest"] = interest;
-        results["courses"][assignment-1]["penalty2"] += penalty2;
-      }
-      
-    }
-    
-    return results;
-}
-
-
-
-/**
- * run the munkres algorithm and does some postprocessing on the results.
- * @param {!Array<int>} wish_penalties represent the penalties while assigning
- *      a student to one of its wishs
- * @param {!Array<int>} wish_min_places is the minimum number of students we
- *      must have for each wish
- * @param {!Array<int>} wish_max_places is the maximum number of students we
- *      can have for each wish
- * @param {!Array<Array<int>>} wish_matrix is a matrix, each row is a student,
- *      each column is a course, each value is the rank of the course in the
- *      wish list of the student. The values are in [1 ; number of courses]
- * @param {Array<Array<int>>} interest_matrix is a matrix, each row is a
- *      student, each column is a course, each value is the interest of the
- *      student for the course. The values are in: { 
- *        -2 (not interesting at all);
- *        -1 (not really interesting);
- *         1 (interesting);
- *         2 (very interesting)
- *      }
- *      This parameter is optionnal.
- * @return {!Array<int>}
- *      the index of the array is the index of the student (0 indexation)
- *      the value is the index of the wish (the course) (1 indexation)
- */
-function process(
-    wish_penalties,
-    wish_min_places,
-    wish_max_places,
-    wish_matrix,
-    interest_matrix
-) {
-    // testing the preconditions
-    let students_number = wish_matrix.length;
-    let total_min_places = arrSum(wish_min_places);
-    let total_max_places = arrSum(wish_max_places);
-    if (students_number > total_max_places) {
-        console.log("The number of students must be lower or equal than the "
-            + "sum of the places.");
-        throw "too much students";
-    } 
-    if (students_number < total_min_places) {
-        console.log("The number of students must be greater or equal than the "
-            + "sum of the minimum number of students for each course.");
-        throw "too few students";
-    }
-    
-    let matrix;
-    if (typeof interest_matrix !== 'undefined') {
-      matrix = create_square_matrix(wish_matrix,
-                                    interest_matrix,
-                                    wish_penalties,
-                                    wish_min_places,
-                                    wish_max_places);
-    } else {
-      matrix = create_square_matrix_without_interests(wish_matrix,
-                                                      wish_penalties,
-                                                      wish_min_places,
-                                                      wish_max_places);
-    }
-    let calculator = new Munkres();
-    indices = calculator.compute(matrix);
-    
-    let assignments = extract_assignments(indices, wish_max_places);
-    // remove the phantom students
-    assignments = assignments.slice(0, students_number);
-    
-    return assignments;
-}
-
-
 
 
 
@@ -729,4 +727,4 @@ console.log(stats);
 
 */
 
-
+export default MunkressApp;

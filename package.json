@@ -16,7 +16,8 @@
     "react-bootstrap-table2-toolkit": "^2.0.0",
     "react-csv-reader": "^1.2.2",
     "react-dom": "^16.8.6",
-    "react-scripts": "3.0.1"
+    "react-scripts": "3.0.1",
+    "munkres-js": "1.2.2"
   },
   "scripts": {
     "start": "react-scripts start",

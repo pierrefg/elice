@@ -1,15 +1,16 @@
 class dataHandler {
     static preProcess(data) { //brackets, new columns
         for (let row in data) {
-            for (let el in data[row]) {
-                let temp = el.replace("[", "{").replace("]", "}");
-                if (temp !== el) {
-                    data[row][temp] = data[row][el];
-                    delete data[row][el];
+            for (let col in data[row]) {
+                let sanitizedCol = col.replace("[", "{").replace("]", "}").replace(".", "_");
+                if (sanitizedCol !== col) {
+                    data[row][sanitizedCol] = data[row][col];
+                    delete data[row][col];
                 }
-                data[row]["affecMode"] = "auto";
-                data[row]["result"] = "non calculé";
             }
+
+            data[row]["affectMode"] = "Automatique";
+            data[row]["result"] = "Non calculé";
         }
         return data;
     }
@@ -21,7 +22,7 @@ class dataHandler {
         return data;
     }
 
-    static getColumns(data) {
+    static extractColumns(data) {
         let columns = {};
 
         for (let el in data[0]) {
@@ -42,10 +43,11 @@ class dataHandler {
         let wishCols = [];
         //Get the columns set as wish Columns by the user
         for (let el in columns) {
-            if (columns[el]["state"] === "wish") {
+            if (columns[el].wishNum !== -1) {
                 wishCols.push(el);
             }
         }
+
         let courseId = 0;
         //Find all the possible courses
         for (let rowNum in data) { //Go through all the rows
@@ -55,7 +57,7 @@ class dataHandler {
                 if (row[wishCols[i]] !== undefined) {
                     if (courses[row[wishCols[i]]] === undefined) {
                         courses[row[wishCols[i]]] = {
-                            nbStudents: 20, //Total number of places available in this course
+                            nbStudents: 42, //Total number of places available in this course
                             nbReservedPlaces: 0, //Places spared for other students
                             id: courseId++ //Course id
                         };
@@ -64,16 +66,6 @@ class dataHandler {
             }
         }
         return courses;
-    }
-
-    static affect(data, courses) {
-        data = [...data];
-        for (let rowIndex in data) {
-            data[rowIndex] = {...data[rowIndex], result: 1};
-        }
-
-        //return process([0,2,4,8,16,32], [20,20,20,20,20,20], [20,20,20,20,20,20], d, d);
-        return data;
     }
 }
 

@@ -6,6 +6,7 @@ import Courses from '../../components/Courses/Courses'
 import Affectations from '../../components/Affectations/Affectations'
 import dataHandler from '../../services/dataHandler'
 import reactTableUtil from '../../services/reactTableUtil'
+import MunkresApp from '../../lib/munkrespp'
 
 import CSVReader from 'react-csv-reader'
 import Container from 'react-bootstrap/Container'
@@ -25,16 +26,17 @@ class App extends Component {
         };
     }
 
-    handleData(data) {
-        data = dataHandler.preProcess(data);
-        data = dataHandler.createIds(data);
-        let cols = dataHandler.getColumns(data);
+    loadData(data) {
+        data = dataHandler.createIds(dataHandler.preProcess(data));
+        let columns = dataHandler.extractColumns(data);
+        let rtColumns = reactTableUtil.columnParser(columns, []);
 
         this.setState({
-            columns: cols,
+            wishCount: 0,
+            columns: columns,
             courses: [],
             students: data,
-            rtColumns: reactTableUtil.columnParser(cols, this.state.courses)
+            rtColumns: rtColumns
         });
     }
 
@@ -42,33 +44,63 @@ class App extends Component {
         console.log(e);
     }
 
-    getStudentsWishList() {
+    getStudentsWishMatrix() {
         let wishlist = [];
-        let students = this.state.students;
-        let studentId = 0;
-        for (let el in students) {
+        for (let studentId in this.state.students) {
             wishlist[studentId] = [];
-            for (let col in students[el]) {
-                if (this.state.columns[col] === undefined) {
-                    continue;
-                }
-                if (this.state.columns[col].state === "wish") {
-                    let limeSurveyCourseName = students[el][col];
+            for (let col in this.state.students[studentId]) {
+                if (this.state.columns[col] !== undefined && this.state.columns[col].wishNum !== -1) {
+                    let limeSurveyCourseName = this.state.students[studentId][col];
                     let limeSurveyCourseRank = this.state.columns[col].wishNum;
                     let limeSurveyCourseId = this.state.courses[limeSurveyCourseName].id;
                     wishlist[studentId][limeSurveyCourseId] = limeSurveyCourseRank;
                 }
             }
-            studentId++;
         }
         return wishlist;
     }
 
-    affect() {
-        let wishlist = this.getStudentsWishList();
+    getCourseMinPlaces() {
+        let places = [];
+        for (let course in this.state.courses) {
+            places[this.state.courses[course].id] = this.state.courses[course].nbStudents-10;
+        }
 
-        let data = dataHandler.affect(this.state.students, this.state.courses);
-        this.setState({students: data});
+        return places;
+    }
+
+    getCourseMaxPlaces() {
+        let places = [];
+        for (let course in this.state.courses) {
+            places[this.state.courses[course].id] = this.state.courses[course].nbStudents+10;
+        }
+
+        return places;
+    }
+
+    affect() {
+        let wishMatrix = this.getStudentsWishMatrix();
+        let minPlaces = this.getCourseMinPlaces();
+        let maxPlaces = this.getCourseMaxPlaces();
+        let penalties = [0, 10, 20, 40, 90, 160];
+
+        let assignments = MunkresApp.process(penalties, minPlaces, maxPlaces, wishMatrix, undefined);
+        console.log(MunkresApp.analyze_results(assignments, penalties, minPlaces, maxPlaces, wishMatrix, undefined));
+
+        let students = [...this.state.students];
+
+
+        let courseIndexToName = {};
+
+        for (let course in this.state.courses) {
+            courseIndexToName[this.state.courses[course].id+1] = course;
+        }
+
+        for (let studentId in assignments) {
+            students[studentId] = {...students[studentId], result: courseIndexToName[assignments[studentId]]};
+        }
+
+        this.setState({students: students});
     }
 
     changeColumnMode(e) {
@@ -96,11 +128,13 @@ class App extends Component {
         }
 
         columns[key] = {...columns[key], state: value};
+        let courses = dataHandler.getCourses(this.state.students, columns);
+        let rtColumns = reactTableUtil.columnParser(columns, courses);
         this.setState({
             columns: columns,
-            rtColumns: reactTableUtil.columnParser(columns, this.state.courses),
             wishCount: wishCount,
-            courses: dataHandler.getCourses(this.state.students, columns)
+            courses: courses,
+            rtColumns: rtColumns
         });
     }
 
@@ -142,11 +176,13 @@ class App extends Component {
 
         columns[key] = {...columns[key], wishNum: value};
 
+        let courses = dataHandler.getCourses(this.state.students, columns);
+        let rtColumns = reactTableUtil.columnParser(columns, courses);
         this.setState({
             columns: columns,
-            rtColumns: reactTableUtil.columnParser(columns, this.state.courses),
             wishCount: wishCount,
-            courses: dataHandler.getCourses(this.state.students, columns)
+            courses: courses,
+            rtColumns: rtColumns
         });
     }
 /*
@@ -191,9 +227,9 @@ class App extends Component {
                     <CSVReader
                         cssClass="csv-reader-input"
                         label={<span className="mr-1">Fichier CSV à charger : </span>}
-                        onFileLoaded={this.handleData.bind(this)}
+                        onFileLoaded={this.loadData.bind(this)}
                         onError={this.handleDataError}
-                        parserOptions={{header: true, encoding: "UTF-8"}}
+                        parserOptions={{header: true, skipEmptyLines: true}}
                         inputId="limeSurvey"
                     />
                 </Jumbotron>
