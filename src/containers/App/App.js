@@ -255,7 +255,7 @@ class App extends Component {
                     />
                 </Jumbotron>
                 <Row>
-                    <Col>
+                    <Col sm="8">
                         <Columns wishCount={this.state.wishCount}
                                  courses={this.state.courses}
                                  columns={this.state.columns}
@@ -263,7 +263,7 @@ class App extends Component {
                                  changeWishNum={this.changeColumnWishNum.bind(this)}
                                  changeAppealNum={this.changeColumnAppealNum.bind(this)}/>
                     </Col>
-                    <Col>
+                    <Col sm="4">
                         <Courses courses={this.state.courses} changePlaces={this.changePlaces.bind(this)} /*loadData = {this.loadData.bind(this)}*//>
                     </Col>
                 </Row>
