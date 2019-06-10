@@ -20,7 +20,7 @@ class App extends Component {
         this.state = {
             wishCount: 0,
             columns: [],
-            courses: [],
+            courses: new Map(),
             students: [],
             rtColumns: [{dataField: 'idVent', text: 'Vide'}]
         };
@@ -34,7 +34,7 @@ class App extends Component {
         this.setState({
             wishCount: 0,
             columns: columns,
-            courses: [],
+            courses: new Map(),
             students: data,
             rtColumns: rtColumns
         });
@@ -42,65 +42,6 @@ class App extends Component {
 
     handleDataError(e) {
         console.log(e);
-    }
-
-    getStudentsWishMatrix() {
-        let wishlist = [];
-        for (let studentId in this.state.students) {
-            wishlist[studentId] = [];
-            for (let col in this.state.students[studentId]) {
-                if (this.state.columns[col] !== undefined && this.state.columns[col].wishNum !== -1) {
-                    let limeSurveyCourseName = this.state.students[studentId][col];
-                    let limeSurveyCourseRank = this.state.columns[col].wishNum;
-                    let limeSurveyCourseId = this.state.courses[limeSurveyCourseName].id;
-                    wishlist[studentId][limeSurveyCourseId] = limeSurveyCourseRank;
-                }
-            }
-        }
-        return wishlist;
-    }
-
-    getCourseMinPlaces() {
-        let places = [];
-        for (let course in this.state.courses) {
-            places[this.state.courses[course].id] = this.state.courses[course].nbStudents-10;
-        }
-
-        return places;
-    }
-
-    getCourseMaxPlaces() {
-        let places = [];
-        for (let course in this.state.courses) {
-            places[this.state.courses[course].id] = this.state.courses[course].nbStudents+10;
-        }
-
-        return places;
-    }
-
-    affect() {
-        let wishMatrix = this.getStudentsWishMatrix();
-        let minPlaces = this.getCourseMinPlaces();
-        let maxPlaces = this.getCourseMaxPlaces();
-        let penalties = [0, 10, 20, 40, 90, 160];
-
-        let assignments = MunkresApp.process(penalties, minPlaces, maxPlaces, wishMatrix, undefined);
-        console.log(MunkresApp.analyze_results(assignments, penalties, minPlaces, maxPlaces, wishMatrix, undefined));
-
-        let students = [...this.state.students];
-
-
-        let courseIndexToName = {};
-
-        for (let course in this.state.courses) {
-            courseIndexToName[this.state.courses[course].id+1] = course;
-        }
-
-        for (let studentId in assignments) {
-            students[studentId] = {...students[studentId], result: courseIndexToName[assignments[studentId]]};
-        }
-
-        this.setState({students: students});
     }
 
     deletedWishNum(state, key) {
@@ -145,7 +86,7 @@ class App extends Component {
         }
 
         state.columns[key] = {...state.columns[key], state: value};
-        state.courses = dataHandler.getCourses(state.students, state.columns);
+        state.courses = dataHandler.updatedCourses(state.courses, state.students, state.columns);
         state.rtColumns = reactTableUtil.columnParser(state.columns, state.courses);
         this.setState(state);
     }
@@ -172,7 +113,7 @@ class App extends Component {
         }
 
         state.columns[key] = {...state.columns[key], wishNum: value};
-        state.courses = dataHandler.getCourses(state.students, state.columns);
+        state.courses = dataHandler.updatedCourses(state.courses, state.students, state.columns);
         state.rtColumns = reactTableUtil.columnParser(state.columns, state.courses);
         this.setState(state);
     }
@@ -194,9 +135,98 @@ class App extends Component {
         }
 
         state.columns[key] = {...state.columns[key], appealNum: value};
-        state.courses = dataHandler.getCourses(state.students, state.columns);
+        state.courses = dataHandler.updatedCourses(state.courses, state.students, state.columns);
         state.rtColumns = reactTableUtil.columnParser(state.columns, state.courses);
         this.setState(state);
+    }
+
+    changePlaces(e) {
+        let name = e.target.form.id;
+        let type = e.target.name;
+        let value = e.target.value;
+
+        let courses = new Map(this.state.courses);
+        switch (type) {
+            case "min":
+                courses.set(name, {...courses.get(name), minPlaces: value});
+                break;
+            case "max":
+                courses.set(name, {...courses.get(name), maxPlaces: value});
+                break;
+            case "reserved":
+                courses.set(name, {...courses.get(name), reservedPlaces: value});
+                break;
+            default:
+                throw Error("unexpected case");
+        }
+
+        this.setState({courses: courses});
+    }
+
+    getStudentsWishMatrix() {
+        let courseIds = {};
+
+        let id = 0;
+        for (let name of this.state.courses.keys()) {
+            courseIds[name] = id++;
+        }
+
+        let wishlist = [];
+        for (let studentId in this.state.students) {
+            wishlist[studentId] = [];
+            for (let col in this.state.students[studentId]) {
+                if (this.state.columns[col] !== undefined && this.state.columns[col].wishNum !== -1) {
+                    let limeSurveyCourseName = this.state.students[studentId][col];
+                    let limeSurveyCourseRank = this.state.columns[col].wishNum;
+                    let limeSurveyCourseId = courseIds[limeSurveyCourseName];
+                    wishlist[studentId][limeSurveyCourseId] = limeSurveyCourseRank;
+                }
+            }
+        }
+
+        return wishlist;
+    }
+
+    getCourseMinPlaces() {
+        let places = [];
+        let courseId = 0;
+        for (let [, course] of this.state.courses) {
+            places[courseId++] = course.minPlaces - course.reservedPlaces;
+        }
+
+        return places;
+    }
+
+    getCourseMaxPlaces() {
+        let places = [];
+        let courseId = 0;
+        for (let [, course] of this.state.courses) {
+            places[courseId++] = course.maxPlaces - course.reservedPlaces;
+        }
+
+        return places;
+    }
+
+    affect() {
+        let wishMatrix = this.getStudentsWishMatrix();
+        let minPlaces = this.getCourseMinPlaces();
+        let maxPlaces = this.getCourseMaxPlaces();
+        let penalties = [0, 10, 20, 40, 90, 160];
+
+        let assignments = MunkresApp.process(penalties, minPlaces, maxPlaces, wishMatrix, undefined);
+        console.log(MunkresApp.analyze_results(assignments, penalties, minPlaces, maxPlaces, wishMatrix, undefined));
+
+        let students = [...this.state.students];
+
+        let courseNames = Array.from(this.state.courses.keys());
+
+        console.log(courseNames);
+
+        for (let studentId in assignments) {
+            students[studentId] = {...students[studentId], result: courseNames[assignments[studentId]-1]};
+        }
+
+        this.setState({students: students});
     }
 
     loadState() {
@@ -234,7 +264,7 @@ class App extends Component {
                                  changeAppealNum={this.changeColumnAppealNum.bind(this)}/>
                     </Col>
                     <Col>
-                        <Courses courses={this.state.courses} /*loadData = {this.loadData.bind(this)}*//>
+                        <Courses courses={this.state.courses} changePlaces={this.changePlaces.bind(this)} /*loadData = {this.loadData.bind(this)}*//>
                     </Col>
                 </Row>
                 <hr/>

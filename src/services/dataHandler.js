@@ -23,7 +23,7 @@ class dataHandler {
     }
 
     static extractColumns(data) {
-        let columns = {};
+        let columns = new Map();
 
         for (let el in data[0]) {
             if (el !== "" && el !== "\n" && el !== "\r\n") {
@@ -39,8 +39,9 @@ class dataHandler {
     }
 
     /** Find all distinct affectation options */
-    static getCourses(data, columns) {
-        let courses = {};
+    static updatedCourses(courses, data, columns) {
+        courses = new Map(courses.entries());
+
         let wishCols = [];
         //Get the columns set as wish Columns by the user
         for (let el in columns) {
@@ -49,23 +50,33 @@ class dataHandler {
             }
         }
 
-        let courseId = 0;
+        let found = new Set();
+
         //Find all the possible courses
         for (let rowNum in data) { //Go through all the rows
             let row = data[rowNum];
             for (let i in wishCols) { //Go through all the wish columns
-                //console.log(row[wishCols[i]])
                 if (row[wishCols[i]] !== undefined) {
-                    if (courses[row[wishCols[i]]] === undefined) {
-                        courses[row[wishCols[i]]] = {
-                            nbStudents: 42, //Total number of places available in this course
-                            nbReservedPlaces: 0, //Places spared for other students
-                            id: courseId++ //Course id
-                        };
+                    found.add(row[wishCols[i]]);
+
+                    if (!courses.has(row[wishCols[i]])) {
+                        courses.set(row[wishCols[i]], {
+                            minPlaces: 40, //Min places in this course
+                            maxPlaces: 50, //Max places in this course
+                            reservedPlaces: 0, //Places spared for other students
+                        });
                     }
                 }
             }
         }
+
+
+        // Remove old courses
+        for (let course in courses.keys()) {
+            if (!found.has(course))
+                courses.delete(course);
+        }
+
         return courses;
     }
 }

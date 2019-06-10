@@ -666,14 +666,12 @@ class MunkressApp {
         let total_min_places = arrSum(wish_min_places);
         let total_max_places = arrSum(wish_max_places);
         if (students_number > total_max_places) {
-            console.log("The number of students must be lower or equal than the "
+            throw Error("Too many students : The number of students must be lower or equal than the "
                 + "sum of the places.");
-            throw Error("too much students");
         }
         if (students_number < total_min_places) {
-            console.log("The number of students must be greater or equal than the "
+            throw Error("Too few students : The number of students must be greater or equal than the "
                 + "sum of the minimum number of students for each course.");
-            throw Error("too few students");
         }
 
         let matrix;
