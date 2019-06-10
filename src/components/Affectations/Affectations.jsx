@@ -44,7 +44,7 @@ class Affectations extends Component {
                                     hover
                                     condensed
                                     noDataIndication="Pas de données"
-                                    pagination={paginationFactory({sizePerPage: 5, hideSizePerPage: true})}
+                                    pagination={paginationFactory({sizePerPage: 10, hideSizePerPage: false})}
                                     cellEdit={cellEditFactory({mode: 'click', blurToSave: true})}
                                     {...props.baseProps}
                                 />

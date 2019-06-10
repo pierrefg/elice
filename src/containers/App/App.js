@@ -241,7 +241,7 @@ class App extends Component {
 
     render() {
         return (
-            <Container fluid={false}>
+            <Container fluid={true}>
                 <Jumbotron>
                     <h1>Ventilation</h1>
                     <hr/>
@@ -264,11 +264,14 @@ class App extends Component {
                                  changeAppealNum={this.changeColumnAppealNum.bind(this)}/>
                     </Col>
                     <Col sm="4">
-                        <Courses courses={this.state.courses} changePlaces={this.changePlaces.bind(this)} /*loadData = {this.loadData.bind(this)}*//>
+                        <Courses courses={this.state.courses}
+                                 changePlaces={this.changePlaces.bind(this)}
+                               /*loadData = {this.loadData.bind(this)}*//>
                     </Col>
                 </Row>
                 <hr/>
-                <Affectations students={this.state.students} rtColumns={this.state.rtColumns}
+                <Affectations students={this.state.students}
+                              rtColumns={this.state.rtColumns}
                               affect={this.affect.bind(this)}/>
             </Container>
         );
