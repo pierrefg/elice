@@ -5,6 +5,8 @@
   "homepage": ".",
   "dependencies": {
     "bootstrap": "^4.3.1",
+    "highcharts": "^7.1.2",
+    "highcharts-react-official": "^2.2.2",
     "jquery": "^3.4.1",
     "js-file-download": "^0.4.7",
     "munkres-js": "1.2.2",
