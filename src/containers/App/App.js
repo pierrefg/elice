@@ -4,6 +4,7 @@ import './App.css';
 import Columns from '../../components/Columns/Columns'
 import Courses from '../../components/Courses/Courses'
 import Affectations from '../../components/Affectations/Affectations'
+import Statistics from '../../components/Statistics/Statistics'
 import dataHandler from '../../services/dataHandler'
 import reactTableUtil from '../../services/reactTableUtil'
 import MunkresApp from '../../lib/munkrespp'
@@ -22,7 +23,8 @@ class App extends Component {
             columns: [],
             courses: new Map(),
             students: [],
-            rtColumns: [{dataField: 'idVent', text: 'Vide'}]
+            rtColumns: [{dataField: 'idVent', text: 'Vide'}],
+            statistics: {}
         };
     }
 
@@ -229,7 +231,9 @@ class App extends Component {
         let penalties = this.computePenalties(this.state.courses.size);
 
         let assignments = MunkresApp.process(penalties, minPlaces, maxPlaces, wishMatrix, undefined);
-        console.log(MunkresApp.analyze_results(assignments, penalties, minPlaces, maxPlaces, wishMatrix, undefined));
+        let statistics = MunkresApp.analyze_results(assignments, penalties, minPlaces, maxPlaces, wishMatrix, undefined);
+
+        console.log(this.state.courses);
 
         let students = [...this.state.students];
 
@@ -239,7 +243,10 @@ class App extends Component {
             students[studentId] = {...students[studentId], result: courseNames[assignments[studentId]-1]};
         }
 
-        this.setState({students: students});
+        this.setState({
+          students: students,
+          statistics: {...statistics}
+        });
     }
 
     loadState() {
@@ -286,6 +293,9 @@ class App extends Component {
                 <Affectations students={this.state.students}
                               rtColumns={this.state.rtColumns}
                               affect={this.affect.bind(this)}/>
+                <hr/>
+                <Statistics statistics={this.state.statistics}
+                            courses={this.state.courses}/>
             </Container>
         );
     }
