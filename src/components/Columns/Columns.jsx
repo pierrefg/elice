@@ -1,14 +1,10 @@
 import React, {Component} from 'react';
 
 import Table from 'react-bootstrap/Table'
-import Button from 'react-bootstrap/Button'
 import Form from 'react-bootstrap/Form'
 
 
 class Columns extends Component {
-    constructor(props) {
-        super(props);
-    }
 
     render() {
         let wishNums = [];
@@ -31,14 +27,14 @@ class Columns extends Component {
                         </thead>
                         <tbody>
                         {
-                            Object.keys(this.props.columns).map((el) => {
+                            Array.from(this.props.columns.keys()).map((el) => {
                                 return <tr key={el}>
                                     <td>{el}</td>
                                     <td>
                                         <Form.Control as="select"
                                                       id={el}
                                                       onChange={this.props.changeMode}
-                                                      value={this.props.columns[el].state}
+                                                      value={this.props.columns.get(el).state}
                                                       size="sm">
                                             <option value="discard">Ignorer</option>
                                             <option value="wish">Voeu</option>
@@ -50,11 +46,11 @@ class Columns extends Component {
                                         <Form.Control as="select"
                                                       id={el}
                                                       onChange={this.props.changeWishNum}
-                                                      value={this.props.columns[el].wishNum}
-                                                      disabled={this.props.columns[el].state !== "wish"}
+                                                      value={this.props.columns.get(el).wishNum}
+                                                      disabled={this.props.columns.get(el).state !== "wish"}
                                                       size="sm">
                                             {
-                                              this.props.columns[el].wishNum === -1 && <option value={-1}>N/A</option>
+                                              this.props.columns.get(el).wishNum === -1 && <option value={-1}>N/A</option>
                                             }
                                             {
                                               wishNums.map((el) => {
@@ -67,11 +63,11 @@ class Columns extends Component {
                                         <Form.Control as="select"
                                                       id={el}
                                                       onChange={this.props.changeAppealNum}
-                                                      value={this.props.columns[el].appealNum}
-                                                      disabled={this.props.columns[el].state !== "appeal"}
+                                                      value={this.props.columns.get(el).appealNum}
+                                                      disabled={this.props.columns.get(el).state !== "appeal"}
                                                       size="sm">
                                             {
-                                              this.props.columns[el].appealNum === -1 && <option value={-1}>N/A</option>
+                                              this.props.columns.get(el).appealNum === -1 && <option value={-1}>N/A</option>
                                             }
                                             {
                                               Array.from(this.props.courses.keys()).map((el) => {

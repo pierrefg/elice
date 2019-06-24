@@ -1,0 +1,43 @@
+{
+  "name": "react-csv-reader",
+  "version": "1.2.2",
+  "description": "React component that handles csv file input.",
+  "main": "dist/react-csv-reader.js",
+  "repository": "https://github.com/nzambello/react-csv-reader",
+  "bugs": "https://github.com/nzambello/react-csv-reader/issues",
+  "author": "Nicola Zambello (github.com/nzambello)",
+  "homepage": "https://github.com/nzambello/react-csv-reader#readme",
+  "license": "MIT",
+  "devDependencies": {
+    "babel-core": "^6.24.1",
+    "babel-loader": "^7.0.0",
+    "babel-preset-env": "^1.5.0",
+    "babel-preset-react": "^6.24.1",
+    "react": "^15.5.4",
+    "react-dom": "^15.5.4",
+    "webpack": "^2.5.1",
+    "husky": "^0.14.3",
+    "lint-staged": "^4.2.3",
+    "prettier": "1.7.4"
+  },
+  "peerDependencies": {
+    "prop-types": "*",
+    "react": "*",
+    "react-dom": "*"
+  },
+  "scripts": {
+    "build": "webpack -p",
+    "watch": "webpack --watch --progress",
+    "prettier-all": "prettier --write '**/*.{js,json,css}'",
+    "precommit": "lint-staged"
+  },
+  "dependencies": {
+    "papaparse": "^5.0.0"
+  },
+  "lint-staged": {
+    "*.{js,json,css}": [
+      "prettier --write",
+      "git add"
+    ]
+  }
+}

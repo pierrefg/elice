@@ -20,7 +20,7 @@ class App extends Component {
 
         this.state = {
             wishCount: 0,
-            columns: [],
+            columns: new Map(),
             courses: new Map(),
             students: [],
             rtColumns: [{dataField: 'id', text: 'Vide'}],
@@ -28,12 +28,12 @@ class App extends Component {
         };
     }
 
-    loadData(data) {
+    loadData(data, filename, meta) {
         data = dataHandler.preProcess(data);
-        let columns = dataHandler.extractColumns(data);
+        let columns = dataHandler.extractColumns(meta);
         let wishCount = 0;
-        for (let name in columns) {
-            if (columns[name].state === "wish") {
+        for (let name of columns.keys()) {
+            if (columns.get(name).state === "wish") {
                 wishCount++;
             }
         }
@@ -56,24 +56,24 @@ class App extends Component {
 
     deletedWishNum(state, key) {
         // Not even a wish column ! Nothing to be done
-        if (state.columns[key].wishNum === -1) {
+        if (state.columns.get(key).wishNum === -1) {
             return state;
         }
 
         state = {...state};
-        state.column = {...state.column};
+        state.column = new Map(state.column);
 
         // Update the current wish columns count
         state.wishCount--;
 
         // Shift other wish columns' numbers
-        for (let el in state.columns) {
-            if (state.columns[el].wishNum > state.columns[key].wishNum)
-                state.columns[el] = {...state.columns[el], wishNum: state.columns[el].wishNum - 1};
+        for (let el of state.columns.keys()) {
+            if (state.columns.get(el).wishNum > state.columns.get(key).wishNum)
+                state.columns.set(el, {...state.columns.get(el), wishNum: state.columns.get(el).wishNum - 1});
         }
 
         // Delete the column's wish number
-        state.columns[key] = {...state.columns[key], wishNum: -1};
+        state.columns.set(key, {...state.columns.get(key), wishNum: -1});
 
         return state;
     }
@@ -82,20 +82,20 @@ class App extends Component {
         let value = e.target.value;
         let key = e.target.id;
         let state = {...this.state};
-        state.columns = {...state.columns};
+        state.columns = new Map(state.columns);
 
         if (value !== "wish") {
             state = this.deletedWishNum(state, key);
-        } else if (state.columns[key].wishNum === -1) {
+        } else if (state.columns.get(key).wishNum === -1) {
             state.wishCount++;
-            state.columns[key] = {...state.columns[key], wishNum: state.wishCount};
+            state.columns.set(key, {...state.columns.get(key), wishNum: state.wishCount});
         }
 
         if (value !== "appeal") {
-            state.columns[key] = {...state.columns[key], appealNum: -1};
+            state.columns.set(key, {...state.columns.get(key), appealNum: -1});
         }
 
-        state.columns[key] = {...state.columns[key], state: value};
+        state.columns.set(key, {...state.columns.get(key), state: value});
         state.courses = dataHandler.updatedCourses(state.courses, state.students, state.columns);
         state.rtColumns = reactTableUtil.columnParser(state.columns, state.courses);
         this.setState(state);
@@ -109,20 +109,20 @@ class App extends Component {
         if (value === -1) {
             state = this.deletedWishNum(state, key);
         } else {
-            if (state.columns[key].wishNum === -1) {
+            if (state.columns.get(key).wishNum === -1) {
                 state.wishCount++;
-                state.columns[key] = {...state.columns[key], wishNum: state.wishCount};
+                state.columns.set(key, {...state.columns.get(key), wishNum: state.wishCount});
             }
 
-            for (let el in state.columns) {
-                if (state.columns[el].wishNum === value) {
-                    state.columns[el] = {...state.columns[el], wishNum: state.columns[key].wishNum};
+            for (let el of state.columns.keys()) {
+                if (state.columns.get(el).wishNum === value) {
+                    state.columns.set(el, {...state.columns.get(el), wishNum: state.columns.get(key).wishNum});
                     break;
                 }
             }
         }
 
-        state.columns[key] = {...state.columns[key], wishNum: value};
+        state.columns.set(key, {...state.columns.get(key), wishNum: value});
         state.courses = dataHandler.updatedCourses(state.courses, state.students, state.columns);
         state.rtColumns = reactTableUtil.columnParser(state.columns, state.courses);
         this.setState(state);
@@ -136,15 +136,15 @@ class App extends Component {
         if (value === -1) {
             state = this.deletedAppealNum(state, key);
         } else {
-            for (let el in state.columns) {
-                if (state.columns[el].appealNum === value) {
-                    state.columns[el] = {...state.columns[el], appealNum: state.columns[key].appealNum};
+            for (let el of state.columns.keys()) {
+                if (state.columns.get(el).appealNum === value) {
+                    state.columns.set(el, {...state.columns.get(el), appealNum: state.columns.get(key).appealNum});
                     break;
                 }
             }
         }
 
-        state.columns[key] = {...state.columns[key], appealNum: value};
+        state.columns.set(key, {...state.columns.get(key), appealNum: value});
         state.courses = dataHandler.updatedCourses(state.courses, state.students, state.columns);
         state.rtColumns = reactTableUtil.columnParser(state.columns, state.courses);
         this.setState(state);
@@ -185,9 +185,9 @@ class App extends Component {
         for (let studentId in this.state.students) {
             wishMatrix[studentId] = [];
             for (let col in this.state.students[studentId]) {
-                if (this.state.columns[col] !== undefined && this.state.columns[col].wishNum !== -1) {
+                if (this.state.columns.get(col) !== undefined && this.state.columns.get(col).wishNum !== -1) {
                     let limeSurveyCourseName = this.state.students[studentId][col];
-                    let limeSurveyCourseRank = this.state.columns[col].wishNum;
+                    let limeSurveyCourseRank = this.state.columns.get(col).wishNum;
                     let limeSurveyCourseId = courseIds[limeSurveyCourseName];
                     wishMatrix[studentId][limeSurveyCourseId] = limeSurveyCourseRank;
                 }
@@ -209,9 +209,9 @@ class App extends Component {
         for (let studentId in this.state.students) {
             interestMatrix[studentId] = [];
             for (let col in this.state.students[studentId]) {
-                if (this.state.columns[col] !== undefined && this.state.columns[col].appealNum !== -1) {
+                if (this.state.columns.get(col)!== undefined && this.state.columns.get(col).appealNum !== -1) {
                     let limeSurveyInterest = this.state.students[studentId][col].toLowerCase();
-                    let course = this.state.columns[col].appealNum;
+                    let course = this.state.columns.get(col).appealNum;
                     let courseId = courseIds[course];
                     let interest = 0;
 
@@ -265,6 +265,9 @@ class App extends Component {
         let minPlaces = this.getCourseMinPlaces();
         let maxPlaces = this.getCourseMaxPlaces();
         let penalties = this.computePenalties(this.state.courses.size);
+        let interestMatrix = undefined;
+        if (useAppeal)
+            interestMatrix = this.getStudentsInterestMatrix();
 
         let assignments = MunkresApp.process(penalties, minPlaces, maxPlaces, wishMatrix, interestMatrix);
         let statistics = MunkresApp.analyze_results(assignments, penalties, minPlaces, maxPlaces, wishMatrix, interestMatrix);
@@ -306,7 +309,9 @@ class App extends Component {
                         label={<span className="mr-1">Fichier CSV à charger : </span>}
                         onFileLoaded={this.loadData.bind(this)}
                         onError={this.handleDataError}
-                        parserOptions={{header: true, skipEmptyLines: true}}
+                        parserOptions={{header: true,
+                                        skipEmptyLines: true,
+                                        transformHeader: dataHandler.sanitizeColumnName}}
                         inputId="limeSurvey"
                     />
                 </Jumbotron>

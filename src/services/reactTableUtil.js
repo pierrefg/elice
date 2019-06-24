@@ -3,8 +3,8 @@ import {Type} from 'react-bootstrap-table2-editor';
 class reactTableUtil{
     static columnParser(cols, courses) {
         let result = [];
-        for(let colName in cols){
-            let col = cols[colName];
+        for(let colName of cols.keys()){
+            let col = cols.get(colName);
             if(col.state !== "discard"){
                 if(col.state === "wish"){
                     result.push({

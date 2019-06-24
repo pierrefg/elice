@@ -1,16 +1,11 @@
 class dataHandler {
-    static PREDEFINED_COLUMNS = new Set(["id", "affectationMode", "result"]);
+
+    static sanitizeColumnName(name) {
+        return name.replace("[", "{").replace("]", "}").replace(".", "_");
+    }
 
     static preProcess(data) { //brackets, new columns
         for (let row in data) {
-            for (let col in data[row]) {
-                let sanitizedCol = col.replace("[", "{").replace("]", "}").replace(".", "_");
-                if (sanitizedCol !== col) {
-                    data[row][sanitizedCol] = data[row][col];
-                    delete data[row][col];
-                }
-            }
-
             data[row]["id"] = row;
             data[row]["affectationMode"] = "Automatique";
             data[row]["result"] = "Non calculé";
@@ -18,12 +13,13 @@ class dataHandler {
         return data;
     }
 
-    static extractColumns(data) {
+    static extractColumns(meta) {
         let columns = new Map();
 
         let wishCount = 1;
-        for (let name in data[0]) {
-            if (name !== "" && name !== "\n" && name !== "\r\n" && !this.PREDEFINED_COLUMNS.has(name)) {
+        for (let i in meta.fields) {
+            let name = meta.fields[i];
+            if (name !== "" && name !== "\n" && name !== "\r\n") {
                 let lowercaseName = name.toLowerCase();
                 let state = "discard";  //information/discard(will not be used)/wish/appeal
                 let wishNum = -1;
@@ -36,11 +32,11 @@ class dataHandler {
                 else if (lowercaseName.includes("nom") || lowercaseName.includes("adresse") || lowercaseName.includes("mail"))
                     state = "information";
 
-                columns[name] = {
+                columns.set(name, {
                     state: state,
                     wishNum: wishNum,
                     appealNum: -1
-                };
+                });
             }
         }
 
@@ -53,8 +49,8 @@ class dataHandler {
 
         let wishCols = [];
         //Get the columns set as wish Columns by the user
-        for (let el in columns) {
-            if (columns[el].wishNum !== -1) {
+        for (let el of columns.keys()) {
+            if (columns.get(el).wishNum !== -1) {
                 wishCols.push(el);
             }
         }
