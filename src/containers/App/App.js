@@ -272,8 +272,6 @@ class App extends Component {
         let assignments = MunkresApp.process(penalties, minPlaces, maxPlaces, wishMatrix, interestMatrix);
         let statistics = MunkresApp.analyze_results(assignments, penalties, minPlaces, maxPlaces, wishMatrix, interestMatrix);
 
-        console.log(this.state.courses);
-
         let students = [...this.state.students];
 
         let courseNames = Array.from(this.state.courses.keys());

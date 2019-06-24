@@ -10,17 +10,18 @@ class Statistics extends Component {
     constructor(props) {
         super(props);
 
-        const options = {
+        this.options = {
           title: {
-            text: 'My chart'
+            text: 'Répartition des voeux'
           },
           series: [{
             data: [1, 2, 3]
           }]
-        }
+        };
     }
 
     render() {
+        this.courses = Array.from(this.props.courses.keys());
         return (
             <div>
                 {
@@ -42,14 +43,16 @@ class Statistics extends Component {
                                 {
                                     Object.keys(this.props.statistics.courses).map((el) => {
                                         return <tr key={el}>
-                                            <td>{el}</td>
+                                            <td>
+                                                {this.courses[el]}
+                                            </td>
                                             <td>
                                                 {this.props.statistics.courses[el].students}
                                             </td>
                                             <td>
-                                                {this.props.statistics.courses[el][1]},
-                                                {this.props.statistics.courses[el][2]},
-                                                {this.props.statistics.courses[el][3]}
+                                                Nombre de voeux 1 : {this.props.statistics.courses[el][1] || 0}<br/>
+                                                Nombre de voeux 2 : {this.props.statistics.courses[el][2] || 0}<br/>
+                                                Nombre de voeux 3 : {this.props.statistics.courses[el][3] || 0}<br/>
                                             </td>
                                             <td>
                                                 {(this.props.statistics.courses[el].penalty1 * 100 / this.props.statistics.penalty1).toFixed(1)}%
@@ -60,6 +63,12 @@ class Statistics extends Component {
                                 </tbody>
                             </Table>
                         </div>
+                        {/*
+                          <HighchartsReact
+                            highcharts={Highcharts}
+                            options={this.options}
+                          />
+                        */}
                     </div>
                 }
             </div>
