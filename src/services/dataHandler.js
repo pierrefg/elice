@@ -1,4 +1,6 @@
 class dataHandler {
+    static PREDEFINED_COLUMNS = new Set(["id", "affectationMode", "result"]);
+
     static preProcess(data) { //brackets, new columns
         for (let row in data) {
             for (let col in data[row]) {
@@ -9,16 +11,10 @@ class dataHandler {
                 }
             }
 
-            data[row]["affectMode"] = "Automatique";
+            data[row]["id"] = row;
+            data[row]["affectationMode"] = "Automatique";
             data[row]["result"] = "Non calculé";
         }
-        return data;
-    }
-
-    /** Create an id for each row */
-    static createIds(data) {
-        let i = 0;
-        for (let el in data) data[el].idVent = i++;
         return data;
     }
 
@@ -27,7 +23,7 @@ class dataHandler {
 
         let wishCount = 1;
         for (let name in data[0]) {
-            if (name !== "" && name !== "\n" && name !== "\r\n") {
+            if (name !== "" && name !== "\n" && name !== "\r\n" && !this.PREDEFINED_COLUMNS.has(name)) {
                 let lowercaseName = name.toLowerCase();
                 let state = "discard";  //information/discard(will not be used)/wish/appeal
                 let wishNum = -1;

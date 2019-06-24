@@ -23,13 +23,13 @@ class App extends Component {
             columns: [],
             courses: new Map(),
             students: [],
-            rtColumns: [{dataField: 'idVent', text: 'Vide'}],
+            rtColumns: [{dataField: 'id', text: 'Vide'}],
             statistics: {}
         };
     }
 
     loadData(data) {
-        data = dataHandler.createIds(dataHandler.preProcess(data));
+        data = dataHandler.preProcess(data);
         let columns = dataHandler.extractColumns(data);
         let wishCount = 0;
         for (let name in columns) {
@@ -181,20 +181,56 @@ class App extends Component {
             courseIds[name] = id++;
         }
 
-        let wishlist = [];
+        let wishMatrix = [];
         for (let studentId in this.state.students) {
-            wishlist[studentId] = [];
+            wishMatrix[studentId] = [];
             for (let col in this.state.students[studentId]) {
                 if (this.state.columns[col] !== undefined && this.state.columns[col].wishNum !== -1) {
                     let limeSurveyCourseName = this.state.students[studentId][col];
                     let limeSurveyCourseRank = this.state.columns[col].wishNum;
                     let limeSurveyCourseId = courseIds[limeSurveyCourseName];
-                    wishlist[studentId][limeSurveyCourseId] = limeSurveyCourseRank;
+                    wishMatrix[studentId][limeSurveyCourseId] = limeSurveyCourseRank;
                 }
             }
         }
 
-        return wishlist;
+        return wishMatrix;
+    }
+
+    getStudentsInterestMatrix() {
+        let courseIds = {};
+
+        let id = 0;
+        for (let name of this.state.courses.keys()) {
+            courseIds[name] = id++;
+        }
+
+        let interestMatrix = [];
+        for (let studentId in this.state.students) {
+            interestMatrix[studentId] = [];
+            for (let col in this.state.students[studentId]) {
+                if (this.state.columns[col] !== undefined && this.state.columns[col].appealNum !== -1) {
+                    let limeSurveyInterest = this.state.students[studentId][col].toLowerCase();
+                    let course = this.state.columns[col].appealNum;
+                    let courseId = courseIds[course];
+                    let interest = 0;
+
+                    if (limeSurveyInterest.includes("pas du tout")) {
+                        interest = -2;
+                    } else if (limeSurveyInterest.includes("peu")) {
+                        interest = -1;
+                    } else if (limeSurveyInterest.includes("très")) {
+                        interest = 2;
+                    } else {
+                        interest = 1;
+                    }
+
+                    interestMatrix[studentId][courseId] = interest;
+                }
+            }
+        }
+
+        return interestMatrix;
     }
 
     getCourseMinPlaces() {
@@ -224,14 +260,14 @@ class App extends Component {
         return penalties;
     }
 
-    affect() {
+    affect(useAppeal) {
         let wishMatrix = this.getStudentsWishMatrix();
         let minPlaces = this.getCourseMinPlaces();
         let maxPlaces = this.getCourseMaxPlaces();
         let penalties = this.computePenalties(this.state.courses.size);
 
-        let assignments = MunkresApp.process(penalties, minPlaces, maxPlaces, wishMatrix, undefined);
-        let statistics = MunkresApp.analyze_results(assignments, penalties, minPlaces, maxPlaces, wishMatrix, undefined);
+        let assignments = MunkresApp.process(penalties, minPlaces, maxPlaces, wishMatrix, interestMatrix);
+        let statistics = MunkresApp.analyze_results(assignments, penalties, minPlaces, maxPlaces, wishMatrix, interestMatrix);
 
         console.log(this.state.courses);
 

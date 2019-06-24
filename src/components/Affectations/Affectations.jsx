@@ -18,7 +18,7 @@ class Affectations extends Component {
                 <h2>Affectations</h2>
 
                 <ToolkitProvider
-                    keyField='idVent'
+                    keyField='id'
                     data={this.props.students}
                     columns={this.props.rtColumns}
                     search
@@ -31,8 +31,10 @@ class Affectations extends Component {
                                 <SearchBar placeholder="Recherche..." {...props.searchProps} />
                                 <div className="float-right">
                                     <Button className="btn-primary mr-2"
-                                            onClick={() => this.props.affect()}>Ventiler</Button>
-                                    <ExportCSVButton className="btn-primary" {...props.csvProps}>Export
+                                            onClick={() => this.props.affect(false)}>Ventiler sans attraits</Button>
+                                    <Button className="btn-primary mr-2"
+                                            onClick={() => this.props.affect(true)}>Ventiler avec attraits</Button>
+                                    <ExportCSVButton className="btn-primary" {...props.csvProps}>Exporter en
                                         CSV</ExportCSVButton>
                                 </div>
                                 <hr/>

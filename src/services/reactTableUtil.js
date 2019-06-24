@@ -31,7 +31,7 @@ class reactTableUtil{
             });
         }
         result.push({
-            dataField: 'affectMode',
+            dataField: 'affectationMode',
             text: "Mode d'affectation",
             editor: {
                         type: Type.SELECT,

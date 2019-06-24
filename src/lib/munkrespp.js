@@ -649,7 +649,7 @@ class MunkressApp {
      *         1 (interesting);
      *         2 (very interesting)
      *      }
-     *      This parameter is optionnal.
+     *      This parameter is optional.
      * @return {!Array<int>}
      *      the index of the array is the index of the student (0 indexation)
      *      the value is the index of the wish (the course) (1 indexation)
