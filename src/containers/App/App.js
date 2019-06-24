@@ -13,6 +13,7 @@ import CSVReader from 'react-csv-reader'
 import Container from 'react-bootstrap/Container'
 import Jumbotron from 'react-bootstrap/Jumbotron'
 import {Col, Row} from 'react-bootstrap'
+import Button from "react-bootstrap/Button";
 
 class App extends Component {
     constructor() {
@@ -282,17 +283,27 @@ class App extends Component {
 
         this.setState({
           students: students,
-          statistics: {...statistics}
+          statistics: statistics
         });
     }
 
-    loadState() {
-
+    loadState(e) {
+        let reader = new FileReader();
+        reader.onload = e => {
+            let state = JSON.parse(e.target.result);
+            state.columns = new Map(state.columns);
+            state.courses = new Map(state.courses);
+            this.setState(state);
+        };
+        reader.readAsText(e.target.files[0]);
     }
 
     saveState() {
         let fileDownload = require('js-file-download');
-        let data = encodeURIComponent(JSON.stringify(this.state));
+        let state = {...this.state}
+        state["columns"] = [...state["columns"]]
+        state["courses"] = [...state["courses"]]
+        let data = JSON.stringify(state);
         fileDownload(data, 'state.json');
     }
 
@@ -300,6 +311,10 @@ class App extends Component {
         return (
             <Container fluid={true}>
                 <Jumbotron>
+                    <input type="file" id="file" ref="loadStateInput" style={{display: "none"}} onChange={e => this.loadState(e)} />
+                    <Button className="btn-primary float-right" onClick={() => this.saveState()}>Enregistrer</Button>
+                    <Button className="btn-primary float-right mr-2" onClick={() => this.refs.loadStateInput.click()}>Charger</Button>
+
                     <h1>Ventilation</h1>
                     <hr/>
                     <CSVReader
