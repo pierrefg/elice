@@ -7,7 +7,7 @@ class Courses extends Component {
     render() {
         return (
             <div>
-                <h2>Cours</h2>
+                <h2>Modules</h2>
 
                 {Array.from(this.props.courses.keys(), (name, i) => {
                     return <CourseTile key={name}
