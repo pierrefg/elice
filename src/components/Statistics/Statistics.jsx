@@ -1,13 +1,12 @@
 import React, {Component} from 'react';
 
 import Table from 'react-bootstrap/Table'
-import Form from 'react-bootstrap/Form'
-import Highcharts from 'highcharts'
-import HighchartsReact from 'highcharts-react-official'
+/*import Highcharts from 'highcharts'
+import HighchartsReact from 'highcharts-react-official'*/
 
 class Statistics extends Component {
 
-    constructor(props) {
+    /*constructor(props) {
         super(props);
 
         this.options = {
@@ -18,7 +17,7 @@ class Statistics extends Component {
             data: [1, 2, 3]
           }]
         };
-    }
+    }*/
 
     render() {
         this.courses = Array.from(this.props.courses.keys());
@@ -42,7 +41,7 @@ class Statistics extends Component {
                                 <tbody>
                                 {
                                     Object.keys(this.props.statistics.courses).map((el) => {
-                                        return <tr key={el}>
+                                        return <tr key={this.courses[el]}>
                                             <td>
                                                 {this.courses[el]}
                                             </td>
@@ -50,9 +49,11 @@ class Statistics extends Component {
                                                 {this.props.statistics.courses[el].students}
                                             </td>
                                             <td>
-                                                Nombre de voeux 1 : {this.props.statistics.courses[el][1] || 0}<br/>
-                                                Nombre de voeux 2 : {this.props.statistics.courses[el][2] || 0}<br/>
-                                                Nombre de voeux 3 : {this.props.statistics.courses[el][3] || 0}<br/>
+                                                {
+                                                    Object.keys(this.props.statistics.courses[el]).map((i) => {
+                                                        return !isNaN(i) && <span key={i}>Nombre de voeux {i} : {this.props.statistics.courses[el][i] || 0}<br/></span>
+                                                    })
+                                                }
                                             </td>
                                             <td>
                                                 {(this.props.statistics.courses[el].penalty1 * 100 / this.props.statistics.penalty1).toFixed(1)}%
