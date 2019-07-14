@@ -15,6 +15,14 @@ import Jumbotron from 'react-bootstrap/Jumbotron'
 import {Col, Row} from 'react-bootstrap'
 import Button from "react-bootstrap/Button";
 
+// https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
+function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+}
+
 class App extends Component {
     constructor() {
         super();
@@ -184,15 +192,18 @@ class App extends Component {
 
         let wishMatrix = [];
         for (let studentId in this.state.students) {
-            wishMatrix[studentId] = [];
+            let wishList = [];
+            wishList.studentId = studentId;
             for (let col in this.state.students[studentId]) {
                 if (this.state.columns.get(col) !== undefined && this.state.columns.get(col).wishNum !== -1) {
                     let limeSurveyCourseName = this.state.students[studentId][col];
                     let limeSurveyCourseRank = this.state.columns.get(col).wishNum;
                     let limeSurveyCourseId = courseIds[limeSurveyCourseName];
-                    wishMatrix[studentId][limeSurveyCourseId] = limeSurveyCourseRank;
+                    wishList[limeSurveyCourseId] = limeSurveyCourseRank;
                 }
             }
+
+            wishMatrix.push(wishList);
         }
 
         return wishMatrix;
@@ -270,6 +281,8 @@ class App extends Component {
         if (useAppeal)
             interestMatrix = this.getStudentsInterestMatrix();
 
+        shuffleArray(wishMatrix);
+
         let assignments = MunkresApp.process(penalties, minPlaces, maxPlaces, wishMatrix, interestMatrix);
         let statistics = MunkresApp.analyze_results(assignments, penalties, minPlaces, maxPlaces, wishMatrix, interestMatrix);
 
@@ -277,8 +290,9 @@ class App extends Component {
 
         let courseNames = Array.from(this.state.courses.keys());
 
-        for (let studentId in assignments) {
-            students[studentId] = {...students[studentId], result: courseNames[assignments[studentId]-1]};
+        for (let id in assignments) {
+            let studentId = wishMatrix[id].studentId;
+            students[studentId] = {...students[studentId], result: courseNames[assignments[id]-1]};
         }
 
         this.setState({
