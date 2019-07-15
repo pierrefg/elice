@@ -23,6 +23,18 @@ function shuffleArray(array) {
     }
 }
 
+function shuffleArray2(array1, array2) {
+    if (array1.length !== array2.length) {
+        throw Error("array1.length !== array2.length")
+    }
+
+    for (let i = array1.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array1[i], array1[j]] = [array1[j], array1[i]];
+        [array2[i], array2[j]] = [array2[j], array2[i]];
+    }
+}
+
 class App extends Component {
     constructor() {
         super();
@@ -190,20 +202,22 @@ class App extends Component {
             courseIds[name] = id++;
         }
 
+        let students = this.state.students;
+
         let wishMatrix = [];
-        for (let studentId in this.state.students) {
+        for (let studentId in students) {
             let wishList = [];
             wishList.studentId = studentId;
-            for (let col in this.state.students[studentId]) {
+            for (let col in students[studentId]) {
                 if (this.state.columns.get(col) !== undefined && this.state.columns.get(col).wishNum !== -1) {
-                    let limeSurveyCourseName = this.state.students[studentId][col];
+                    let limeSurveyCourseName = students[studentId][col];
                     let limeSurveyCourseRank = this.state.columns.get(col).wishNum;
                     let limeSurveyCourseId = courseIds[limeSurveyCourseName];
                     wishList[limeSurveyCourseId] = limeSurveyCourseRank;
                 }
             }
 
-            wishMatrix.push(wishList);
+            wishMatrix[studentId] = wishList;
         }
 
         return wishMatrix;
@@ -217,12 +231,15 @@ class App extends Component {
             courseIds[name] = id++;
         }
 
+        let students = this.state.students;
+
         let interestMatrix = [];
-        for (let studentId in this.state.students) {
-            interestMatrix[studentId] = [];
-            for (let col in this.state.students[studentId]) {
+        for (let studentId in students) {
+            let interestList = [];
+            interestList.studentId = studentId;
+            for (let col in students[studentId]) {
                 if (this.state.columns.get(col)!== undefined && this.state.columns.get(col).appealNum !== -1) {
-                    let limeSurveyInterest = this.state.students[studentId][col].toLowerCase();
+                    let limeSurveyInterest = students[studentId][col].toLowerCase();
                     let course = this.state.columns.get(col).appealNum;
                     let courseId = courseIds[course];
                     let interest = 0;
@@ -237,12 +254,24 @@ class App extends Component {
                         interest = 1;
                     }
 
-                    interestMatrix[studentId][courseId] = interest;
+                    interestList[courseId] = interest;
                 }
             }
+
+            interestMatrix[studentId] = interestList;
         }
 
         return interestMatrix;
+    }
+
+    countManualAffectation(courseName) {
+        let count = 0;
+        for (let studentId in this.state.students) {
+            if (this.state.students[studentId].affectationMode === courseName)
+                count++;
+        }
+
+        return count;
     }
 
     getCourseMinPlaces() {
@@ -273,27 +302,55 @@ class App extends Component {
     }
 
     affect(useAppeal) {
+        // wishMatrix et interestMatrix ont pour clé le studentId
+        // tandis que wishMatrixAuto et interestMatrixAuto ont pour clés des ids randomisés
+
         let wishMatrix = this.getStudentsWishMatrix();
         let minPlaces = this.getCourseMinPlaces();
         let maxPlaces = this.getCourseMaxPlaces();
         let penalties = this.computePenalties(this.state.courses.size);
         let interestMatrix = undefined;
-        if (useAppeal)
+
+        // On enlève les étudiants qui sont affectés manuellement et on mélange la matrice
+        let wishMatrixAuto = wishMatrix.filter(listMatrix => this.state.students[listMatrix.studentId].affectationMode === "Automatique");
+        let interestMatrixAuto = undefined;
+        if (useAppeal) {
             interestMatrix = this.getStudentsInterestMatrix();
-
-        shuffleArray(wishMatrix);
-
-        let assignments = MunkresApp.process(penalties, minPlaces, maxPlaces, wishMatrix, interestMatrix);
-        let statistics = MunkresApp.analyze_results(assignments, penalties, minPlaces, maxPlaces, wishMatrix, interestMatrix);
-
-        let students = [...this.state.students];
+            interestMatrixAuto = interestMatrix.filter(listMatrix => this.state.students[listMatrix.studentId].affectationMode === "Automatique");
+            shuffleArray2(wishMatrixAuto, interestMatrixAuto);
+        } else {
+            shuffleArray(wishMatrixAuto);
+        }
 
         let courseNames = Array.from(this.state.courses.keys());
 
-        for (let id in assignments) {
-            let studentId = wishMatrix[id].studentId;
-            students[studentId] = {...students[studentId], result: courseNames[assignments[id]-1]};
+        // On décompte les étudiants qui sont affectés manuellement
+        let minPlacesAuto = courseNames.map((courseName, index) => minPlaces[index] - this.countManualAffectation(courseName));
+        let maxPlacesAuto = courseNames.map((courseName, index) => maxPlaces[index] - this.countManualAffectation(courseName));
+
+        // On lance l'algorithme sur tous ceux qui doivent être affectés automatiquement
+        let assignmentsAuto = MunkresApp.process(penalties, minPlacesAuto, maxPlacesAuto, wishMatrixAuto, interestMatrixAuto);
+
+        let assignments = [];
+        let students = [...this.state.students];
+
+        // On écrit le résultat des affectations automatiques en retrouvant le studentId original
+        for (let id in assignmentsAuto) {
+            let studentId = wishMatrixAuto[id].studentId;
+            assignments[studentId] = assignmentsAuto[id];
+            students[studentId] = {...students[studentId], result: courseNames[assignmentsAuto[id]-1]};
         }
+
+        // On fait les affectations manuelles
+        for (let studentId in students) {
+            if (students[studentId].affectationMode !== "Automatique")
+            {
+                assignments[studentId] = courseNames.indexOf(students[studentId].affectationMode)+1;
+                students[studentId] = {...students[studentId], result: students[studentId].affectationMode};
+            }
+        }
+
+        let statistics = MunkresApp.analyze_results(assignments, penalties, minPlaces, maxPlaces, wishMatrix, interestMatrix);
 
         this.setState({
           students: students,
