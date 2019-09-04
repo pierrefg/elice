@@ -46,7 +46,10 @@ class App extends Component {
             courses: new Map(),
             students: [],
             rtColumns: [{dataField: 'id', text: 'Vide'}],
-            statistics: {}
+            statistics: {},
+            isAffecting: false,
+            errorShown: false,
+            errorMessage: ""
         };
     }
 
@@ -69,8 +72,6 @@ class App extends Component {
             courses: courses,
             students: data,
             rtColumns: rtColumns,
-            errorShown: false,
-            errorMessage: ""
         });
     }
 
@@ -305,6 +306,18 @@ class App extends Component {
     }
 
     affect(useAppeal) {
+        let students = [...this.state.students];
+
+        // On efface les affectations précédentes
+        for (let studentId in students) {
+            students[studentId] = {...students[studentId], result: "Calcul en cours"};
+        }
+
+        this.setState({students: students, isAffecting: true});
+        setTimeout(() => this._affect(useAppeal), 0);
+    }
+
+    _affect(useAppeal) {
         // wishMatrix et interestMatrix ont pour clé le studentId
         // tandis que wishMatrixAuto et interestMatrixAuto ont pour clés des ids randomisés
 
@@ -339,6 +352,7 @@ class App extends Component {
         } catch (e) {
             // S'il y a une erreur
             this.showError(e.message);
+            this.setState({isAffecting: false});
             return;
         }
 
@@ -364,8 +378,9 @@ class App extends Component {
         let statistics = MunkresApp.analyze_results(assignments, penalties, minPlaces, maxPlaces, wishMatrix, interestMatrix);
 
         this.setState({
-          students: students,
-          statistics: statistics
+            students: students,
+            statistics: statistics,
+            isAffecting: false
         });
     }
 
@@ -390,11 +405,11 @@ class App extends Component {
     }
 
     showError(message) {
-        this.setState({"errorShown": true, "errorMessage": message});
+        this.setState({errorShown: true, errorMessage: message});
     }
 
     hideError() {
-        this.setState({"errorShown": false});
+        this.setState({errorShown: false});
     }
 
     render() {
@@ -404,8 +419,16 @@ class App extends Component {
                 <Container fluid={true}>
                     <Jumbotron>
                         <input type="file" id="file" ref="loadStateInput" style={{display: "none"}} onChange={e => this.loadState(e)} />
-                        <Button className="btn-primary float-right" onClick={() => this.saveState()}>Enregistrer</Button>
-                        <Button className="btn-primary float-right mr-2" onClick={() => this.refs.loadStateInput.click()}>Charger</Button>
+                        <Button className="btn-primary float-right"
+                                onClick={() => this.saveState()}
+                                disabled={this.state.isAffecting}>
+                            Enregistrer
+                        </Button>
+                        <Button className="btn-primary float-right mr-2"
+                                onClick={() => this.refs.loadStateInput.click()}
+                                disabled={this.state.isAffecting}>
+                            Charger
+                        </Button>
 
                         <h1>Ventilation</h1>
                         <hr/>
@@ -418,6 +441,7 @@ class App extends Component {
                                             skipEmptyLines: true,
                                             transformHeader: dataHandler.sanitizeColumnName}}
                             inputId="limeSurvey"
+                            disabled={this.state.isAffecting}
                         />
                     </Jumbotron>
                     <Row>
@@ -437,6 +461,7 @@ class App extends Component {
                     <hr/>
                     <Affectations students={this.state.students}
                                   rtColumns={this.state.rtColumns}
+                                  isAffecting={this.state.isAffecting}
                                   affect={this.affect.bind(this)}/>
                     <hr/>
                     <Statistics statistics={this.state.statistics}
