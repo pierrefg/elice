@@ -1,0 +1,8 @@
+.table-borderless td {
+    padding: 0 10px 0 0;
+    white-space: nowrap;
+}
+
+.table-borderless td:last-child {
+    width: 100%;
+}

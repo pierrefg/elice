@@ -3,6 +3,7 @@ import './App.css';
 
 import Columns from '../../components/Columns/Columns'
 import Courses from '../../components/Courses/Courses'
+import Summary from '../../components/Summary/Summary'
 import Affectations from '../../components/Affectations/Affectations'
 import Statistics from '../../components/Statistics/Statistics'
 import dataHandler from '../../services/dataHandler'
@@ -46,7 +47,7 @@ class App extends Component {
             courses: new Map(),
             students: [],
             rtColumns: [{dataField: 'id', text: 'Vide'}],
-            statistics: {},
+            statistics: null,
             isAffecting: false,
             errorShown: false,
             errorMessage: ""
@@ -72,6 +73,7 @@ class App extends Component {
             courses: courses,
             students: data,
             rtColumns: rtColumns,
+            statistics: null
         });
     }
 
@@ -404,9 +406,9 @@ class App extends Component {
 
     saveState() {
         let fileDownload = require('js-file-download');
-        let state = {...this.state}
-        state["columns"] = [...state["columns"]]
-        state["courses"] = [...state["courses"]]
+        let state = {...this.state};
+        state["columns"] = [...state["columns"]];
+        state["courses"] = [...state["courses"]];
         let data = JSON.stringify(state);
         fileDownload(data, 'state.json');
     }
@@ -451,29 +453,47 @@ class App extends Component {
                             disabled={this.state.isAffecting}
                         />
                     </Jumbotron>
-                    <Row>
-                        <Col sm="8">
-                            <Columns wishCount={this.state.wishCount}
-                                     courses={this.state.courses}
-                                     columns={this.state.columns}
-                                     changeMode={this.changeColumnMode.bind(this)}
-                                     changeWishNum={this.changeColumnWishNum.bind(this)}
-                                     changeAppealNum={this.changeColumnAppealNum.bind(this)}/>
-                        </Col>
-                        <Col sm="4">
-                            <Courses courses={this.state.courses}
-                                     changePlaces={this.changePlaces.bind(this)}/>
-                        </Col>
-                    </Row>
-                    <hr/>
-                    <Affectations students={this.state.students}
-                                  rtColumns={this.state.rtColumns}
-                                  isAffecting={this.state.isAffecting}
-                                  affect={this.affect.bind(this)}/>
-                    <hr/>
-                    <Statistics statistics={this.state.statistics}
-                                courses={this.state.courses}/>
 
+                    {this.state.students.length !== 0 &&
+                        <>
+                            <Row>
+                                <Col sm="8">
+                                    <Columns wishCount={this.state.wishCount}
+                                             courses={this.state.courses}
+                                             columns={this.state.columns}
+                                             changeMode={this.changeColumnMode.bind(this)}
+                                             changeWishNum={this.changeColumnWishNum.bind(this)}
+                                             changeAppealNum={this.changeColumnAppealNum.bind(this)}/>
+                                </Col>
+                                <Col sm="4">
+                                    <Courses courses={this.state.courses}
+                                             changePlaces={this.changePlaces.bind(this)}/>
+                                </Col>
+                            </Row>
+                            <hr/>
+                            <Row>
+                                <Col sm="4">
+                                    <Summary studentCount={this.state.students.length}
+                                             minPlaces={Array.from(this.state.courses.values()).reduce((acc, course) => acc + course.minPlaces, 0)}
+                                             maxPlaces={Array.from(this.state.courses.values()).reduce((acc, course) => acc + course.maxPlaces, 0)}
+                                             reservedPlaces={Array.from(this.state.courses.values()).reduce((acc, course) => acc + course.reservedPlaces, 0)}/>
+                                </Col>
+                            </Row>
+                            <hr/>
+                            <Affectations students={this.state.students}
+                                          rtColumns={this.state.rtColumns}
+                                          isAffecting={this.state.isAffecting}
+                                          affect={this.affect.bind(this)}/>
+                            {
+                                this.state.statistics &&
+                                <>
+                                    <hr/>
+                                    <Statistics statistics={this.state.statistics}
+                                                courses={this.state.courses}/>
+                                </>
+                            }
+                        </>
+                    }
                 </Container>
 
                 <Modal show={this.state.errorShown} onHide={this.hideError.bind(this)}>
