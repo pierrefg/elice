@@ -16,7 +16,7 @@ class Affectations extends Component {
     render() {
         return (
             <div>
-                <h2>Affectations</h2>
+                <h2>4. Affectations</h2>
 
                 <ToolkitProvider
                     keyField='id'

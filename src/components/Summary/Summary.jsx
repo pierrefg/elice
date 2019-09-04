@@ -7,7 +7,7 @@ class Summary extends Component {
     render() {
         return (
             <div>
-                <h2>Récapitulatif</h2>
+                <h2>3. Récapitulatif</h2>
 
                 <Table borderless>
                     <tbody>

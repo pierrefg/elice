@@ -3,7 +3,6 @@ import React, {Component} from 'react';
 import Table from 'react-bootstrap/Table'
 import Form from 'react-bootstrap/Form'
 
-
 class Columns extends Component {
 
     render() {
@@ -14,14 +13,14 @@ class Columns extends Component {
 
         return (
             <div>
-                <h2>Liaison des données</h2>
+                <h2>1. Liaison des données</h2>
                 <div id="columnsTable" className="mb-3">
                     <Table striped bordered hover size="sm">
                         <thead>
                         <tr>
                             <th>Colonnes</th>
                             <th>Mode</th>
-                            <th>Rang du Voeu</th>
+                            <th>Rang du Vœu</th>
                             <th>Attrait du Module</th>
                         </tr>
                         </thead>
