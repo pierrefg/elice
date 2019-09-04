@@ -1,23 +1,26 @@
 import React, {Component} from 'react';
 import './App.css';
 
-import Columns from '../../components/Columns/Columns'
-import Courses from '../../components/Courses/Courses'
-import Summary from '../../components/Summary/Summary'
-import Affectations from '../../components/Affectations/Affectations'
-import Statistics from '../../components/Statistics/Statistics'
-import dataHandler from '../../services/dataHandler'
-import reactTableUtil from '../../services/reactTableUtil'
-import MunkresApp from '../../lib/munkrespp'
+import Columns from '../../components/Columns/Columns';
+import Courses from '../../components/Courses/Courses';
+import Summary from '../../components/Summary/Summary';
+import Affectations from '../../components/Affectations/Affectations';
+import Statistics from '../../components/Statistics/Statistics';
+import dataHandler from '../../services/dataHandler';
+import reactTableUtil from '../../services/reactTableUtil';
+import MunkresApp from '../../lib/munkrespp';
 
-import CSVReader from 'react-csv-reader'
-import Container from 'react-bootstrap/Container'
-import Jumbotron from 'react-bootstrap/Jumbotron'
-import {Col, Row} from 'react-bootstrap'
+import CSVReader from 'react-csv-reader';
+import Container from 'react-bootstrap/Container';
+import Jumbotron from 'react-bootstrap/Jumbotron';
+import {Col, Row} from 'react-bootstrap';
 import Button from 'react-bootstrap/Button';
-import Modal from 'react-bootstrap/Modal'
+import Modal from 'react-bootstrap/Modal';
+
+import fileDownload from 'js-file-download';
 
 // https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
+
 function shuffleArray(array) {
     for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -38,8 +41,8 @@ function shuffleArray2(array1, array2) {
 }
 
 class App extends Component {
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
 
         this.state = {
             wishCount: 0,
@@ -405,7 +408,6 @@ class App extends Component {
     }
 
     saveState() {
-        let fileDownload = require('js-file-download');
         let state = {...this.state};
         state["columns"] = [...state["columns"]];
         state["courses"] = [...state["courses"]];

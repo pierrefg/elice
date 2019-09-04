@@ -225,7 +225,7 @@ import computeMunkres from "munkres-js";
 
 // return the sum of the values of an array 
 // example : arrSum([20, 10, 5, 10]) -> 45
-const arrSum = arr => arr.reduce((a,b) => a + b, 0)
+const arrSum = arr => arr.reduce((a,b) => a + b, 0);
 
 const INF = 999999999;
 
@@ -276,7 +276,7 @@ class MunkressApp {
                 let penalty = wish_penalties[wish_rank - 1];
                 let next_penalty = 0;
 
-                if (wish_rank < wish_penalties.lengh) {
+                if (wish_rank < wish_penalties.length) {
                     next_penalty = wish_penalties[wish_rank];
                 } else {
                     next_penalty = 2 * penalty;
@@ -583,7 +583,7 @@ class MunkressApp {
                 let penalty2 = penalty1;
 
                 let next_penalty = 0;
-                if (wish_rank < wish_penalties.lengh) {
+                if (wish_rank < wish_penalties.length) {
                     next_penalty = wish_penalties[wish_rank];
                 } else {
                     next_penalty = 2 * penalty1;
