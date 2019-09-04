@@ -180,16 +180,23 @@ class App extends Component {
         let type = e.target.name;
         let value = e.target.value;
 
+        if (value < 0)
+            return;
+
         let courses = new Map(this.state.courses);
+        let course = courses.get(name);
+
         switch (type) {
             case "min":
-                courses.set(name, {...courses.get(name), minPlaces: value});
+                courses.set(name, {...course, minPlaces: Math.min(value, course.maxPlaces)});
                 break;
             case "max":
-                courses.set(name, {...courses.get(name), maxPlaces: value});
+                courses.set(name, {...course,
+                                   maxPlaces: Math.max(course.minPlaces, value),
+                                   reservedPlaces: Math.min(course.reservedPlaces, course.maxPlaces)});
                 break;
             case "reserved":
-                courses.set(name, {...courses.get(name), reservedPlaces: value});
+                courses.set(name, {...course, reservedPlaces: Math.min(value, course.maxPlaces)});
                 break;
             default:
                 throw Error("unexpected case");
