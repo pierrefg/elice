@@ -302,15 +302,21 @@ class MunkressApp {
                         coef = 0;
                         break;
 
+                    case null:
+                        throw Error("Invalid null value for wish interest !");
+
+                    case undefined:
+                        throw Error("Invalid undefined value for wish interest !");
+
                     default:
                         coef = 0;
-                        console.log("Invalid value for wish interest !\n"
+                        throw Error("Invalid value for wish interest !\n"
                             + "Wish interest value must be in:\n"
                             + "(very interesting : 2,\n"
                             + " interesting : 1,\n"
                             + " not really interesting : -1,\n"
                             + " not interesting at all : -2)");
-                        break;
+
                 }
                 penalty += Math.round(coef * (next_penalty - penalty));
 

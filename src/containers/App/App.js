@@ -363,8 +363,15 @@ class App extends Component {
             assignmentsAuto = MunkresApp.process(penalties, minPlacesAuto, maxPlacesAuto, wishMatrixAuto, interestMatrixAuto);
         } catch (e) {
             // S'il y a une erreur
+            let students = [...this.state.students];
+
+            // On efface le calcul en cours
+            for (let studentId in students) {
+                students[studentId] = {...students[studentId], result: "Erreur d'affectation"};
+            }
+
+            this.setState({students: students, isAffecting: false});
             this.showError(e.message);
-            this.setState({isAffecting: false});
             return;
         }
 
