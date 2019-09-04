@@ -31,11 +31,14 @@ class Affectations extends Component {
                                 <SearchBar placeholder="Recherche..." {...props.searchProps} />
                                 <div className="float-right">
                                     <Button className="btn-primary mr-2"
-                                            onClick={() => this.props.affect(false)}>Ventiler sans attraits</Button>
+                                            onClick={() => this.props.affect(false)}
+                                            disabled={this.props.students.length === 0}>Ventiler sans attraits</Button>
                                     <Button className="btn-primary mr-2"
-                                            onClick={() => this.props.affect(true)}>Ventiler avec attraits</Button>
-                                    <ExportCSVButton className="btn-primary" {...props.csvProps}>Exporter en
-                                        CSV</ExportCSVButton>
+                                            onClick={() => this.props.affect(true)}
+                                            disabled={this.props.students.length === 0}>Ventiler avec attraits</Button>
+                                    <ExportCSVButton className="btn-primary"
+                                                     disabled={this.props.students.length === 0}
+                                                     {...props.csvProps}>Exporter en CSV</ExportCSVButton>
                                 </div>
                                 <hr/>
                                 <BootstrapTable

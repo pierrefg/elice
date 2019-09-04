@@ -13,7 +13,8 @@ import CSVReader from 'react-csv-reader'
 import Container from 'react-bootstrap/Container'
 import Jumbotron from 'react-bootstrap/Jumbotron'
 import {Col, Row} from 'react-bootstrap'
-import Button from "react-bootstrap/Button";
+import Button from 'react-bootstrap/Button';
+import Modal from 'react-bootstrap/Modal'
 
 // https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
 function shuffleArray(array) {
@@ -67,7 +68,9 @@ class App extends Component {
             columns: columns,
             courses: courses,
             students: data,
-            rtColumns: rtColumns
+            rtColumns: rtColumns,
+            errorShown: false,
+            errorMessage: ""
         });
     }
 
@@ -328,8 +331,16 @@ class App extends Component {
         let minPlacesAuto = courseNames.map((courseName, index) => minPlaces[index] - this.countManualAffectation(courseName));
         let maxPlacesAuto = courseNames.map((courseName, index) => maxPlaces[index] - this.countManualAffectation(courseName));
 
-        // On lance l'algorithme sur tous ceux qui doivent être affectés automatiquement
-        let assignmentsAuto = MunkresApp.process(penalties, minPlacesAuto, maxPlacesAuto, wishMatrixAuto, interestMatrixAuto);
+        let assignmentsAuto = undefined;
+
+        try {
+            // On lance l'algorithme sur tous ceux qui doivent être affectés automatiquement
+            assignmentsAuto = MunkresApp.process(penalties, minPlacesAuto, maxPlacesAuto, wishMatrixAuto, interestMatrixAuto);
+        } catch (e) {
+            // S'il y a une erreur
+            this.showError(e.message);
+            return;
+        }
 
         let assignments = [];
         let students = [...this.state.students];
@@ -378,50 +389,76 @@ class App extends Component {
         fileDownload(data, 'state.json');
     }
 
+    showError(message) {
+        this.setState({"errorShown": true, "errorMessage": message});
+    }
+
+    hideError() {
+        this.setState({"errorShown": false});
+    }
+
     render() {
         return (
-            <Container fluid={true}>
-                <Jumbotron>
-                    <input type="file" id="file" ref="loadStateInput" style={{display: "none"}} onChange={e => this.loadState(e)} />
-                    <Button className="btn-primary float-right" onClick={() => this.saveState()}>Enregistrer</Button>
-                    <Button className="btn-primary float-right mr-2" onClick={() => this.refs.loadStateInput.click()}>Charger</Button>
+            <>
 
-                    <h1>Ventilation</h1>
+                <Container fluid={true}>
+                    <Jumbotron>
+                        <input type="file" id="file" ref="loadStateInput" style={{display: "none"}} onChange={e => this.loadState(e)} />
+                        <Button className="btn-primary float-right" onClick={() => this.saveState()}>Enregistrer</Button>
+                        <Button className="btn-primary float-right mr-2" onClick={() => this.refs.loadStateInput.click()}>Charger</Button>
+
+                        <h1>Ventilation</h1>
+                        <hr/>
+                        <CSVReader
+                            cssClass="csv-reader-input"
+                            label={<span className="mr-1">Fichier CSV à charger : </span>}
+                            onFileLoaded={this.loadData.bind(this)}
+                            onError={this.handleDataError}
+                            parserOptions={{header: true,
+                                            skipEmptyLines: true,
+                                            transformHeader: dataHandler.sanitizeColumnName}}
+                            inputId="limeSurvey"
+                        />
+                    </Jumbotron>
+                    <Row>
+                        <Col sm="8">
+                            <Columns wishCount={this.state.wishCount}
+                                     courses={this.state.courses}
+                                     columns={this.state.columns}
+                                     changeMode={this.changeColumnMode.bind(this)}
+                                     changeWishNum={this.changeColumnWishNum.bind(this)}
+                                     changeAppealNum={this.changeColumnAppealNum.bind(this)}/>
+                        </Col>
+                        <Col sm="4">
+                            <Courses courses={this.state.courses}
+                                     changePlaces={this.changePlaces.bind(this)}/>
+                        </Col>
+                    </Row>
                     <hr/>
-                    <CSVReader
-                        cssClass="csv-reader-input"
-                        label={<span className="mr-1">Fichier CSV à charger : </span>}
-                        onFileLoaded={this.loadData.bind(this)}
-                        onError={this.handleDataError}
-                        parserOptions={{header: true,
-                                        skipEmptyLines: true,
-                                        transformHeader: dataHandler.sanitizeColumnName}}
-                        inputId="limeSurvey"
-                    />
-                </Jumbotron>
-                <Row>
-                    <Col sm="8">
-                        <Columns wishCount={this.state.wishCount}
-                                 courses={this.state.courses}
-                                 columns={this.state.columns}
-                                 changeMode={this.changeColumnMode.bind(this)}
-                                 changeWishNum={this.changeColumnWishNum.bind(this)}
-                                 changeAppealNum={this.changeColumnAppealNum.bind(this)}/>
-                    </Col>
-                    <Col sm="4">
-                        <Courses courses={this.state.courses}
-                                 changePlaces={this.changePlaces.bind(this)}
-                               /*loadData = {this.loadData.bind(this)}*//>
-                    </Col>
-                </Row>
-                <hr/>
-                <Affectations students={this.state.students}
-                              rtColumns={this.state.rtColumns}
-                              affect={this.affect.bind(this)}/>
-                <hr/>
-                <Statistics statistics={this.state.statistics}
-                            courses={this.state.courses}/>
-            </Container>
+                    <Affectations students={this.state.students}
+                                  rtColumns={this.state.rtColumns}
+                                  affect={this.affect.bind(this)}/>
+                    <hr/>
+                    <Statistics statistics={this.state.statistics}
+                                courses={this.state.courses}/>
+
+                </Container>
+
+                <Modal show={this.state.errorShown} onHide={this.hideError.bind(this)}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>Une erreur est survenue...</Modal.Title>
+                    </Modal.Header>
+
+                    <Modal.Body>
+                        <p>{this.state.errorMessage}</p>
+                    </Modal.Body>
+
+                    <Modal.Footer>
+                        <Button variant="primary" onClick={this.hideError.bind(this)}>Fermer</Button>
+                    </Modal.Footer>
+                </Modal>
+
+            </>
         );
     }
 }
