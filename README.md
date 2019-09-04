@@ -10,6 +10,14 @@ In the project directory, you can run:
 
 Downloads and installs all the dependencies of the app.
 
+## How to update dependancies :
+
+In the project directory, you can run:
+
+### `ncu -u`
+
+Updates the package.json.
+
 ## Available Scripts
 
 In the project directory, you can run:
