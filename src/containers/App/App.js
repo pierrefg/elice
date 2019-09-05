@@ -290,6 +290,27 @@ class App extends Component {
         return count;
     }
 
+    getTotalManualAffectations() {
+        let count = 0;
+        for(let i = 0; i < this.state.students.length; ++i){
+            if (this.state.students[i].affectationMode !== "Automatique")
+                count++;
+        }
+        return count;
+    }
+
+    getTotalMinPlaces() {
+        return Array.from(this.state.courses.values()).reduce((acc, course) => acc + course.minPlaces, 0);
+    }
+
+    getTotalMaxPlaces() {
+        return Array.from(this.state.courses.values()).reduce((acc, course) => acc + course.maxPlaces, 0);
+    }
+
+    getTotalReservedPlaces() {
+        return Array.from(this.state.courses.values()).reduce((acc, course) => acc + course.reservedPlaces, 0);
+    }
+
     getCourseMinPlaces() {
         let places = [];
         let courseId = 0;
@@ -318,15 +339,24 @@ class App extends Component {
     }
 
     affect(useAppeal) {
-        let students = [...this.state.students];
+        let manualStudentCount = this.getTotalManualAffectations();
+        let autoStudentCount = this.state.students.length - manualStudentCount;
+        let reservedPlaces = this.getTotalReservedPlaces() + manualStudentCount;
+        if (this.getTotalMinPlaces() - reservedPlaces > autoStudentCount)
+            this.showError("Il n'y a pas assez d'étudiants pour remplir toutes les places minimales en affectation automatique.");
+        else if (autoStudentCount > this.getTotalMaxPlaces() - reservedPlaces)
+            this.showError("Il n'y a pas assez de places au maximum pour tous les étudiants en affectation automatique.");
+        else {
+            let students = [...this.state.students];
 
-        // On efface les affectations précédentes
-        for (let studentId in students) {
-            students[studentId] = {...students[studentId], result: "Calcul en cours"};
+            // On efface les affectations précédentes
+            for (let studentId in students) {
+                students[studentId] = {...students[studentId], result: "Calcul en cours"};
+            }
+
+            this.setState({students: students, isAffecting: true});
+            setTimeout(() => this._affect(useAppeal), 0);
         }
-
-        this.setState({students: students, isAffecting: true});
-        setTimeout(() => this._affect(useAppeal), 0);
     }
 
     _affect(useAppeal) {
@@ -481,11 +511,12 @@ class App extends Component {
                             </Row>
                             <hr/>
                             <Row>
-                                <Col sm="4">
+                                <Col sm="8">
                                     <Summary studentCount={this.state.students.length}
-                                             minPlaces={Array.from(this.state.courses.values()).reduce((acc, course) => acc + course.minPlaces, 0)}
-                                             maxPlaces={Array.from(this.state.courses.values()).reduce((acc, course) => acc + course.maxPlaces, 0)}
-                                             reservedPlaces={Array.from(this.state.courses.values()).reduce((acc, course) => acc + course.reservedPlaces, 0)}/>
+                                             minPlaces={this.getTotalMinPlaces()}
+                                             maxPlaces={this.getTotalMaxPlaces()}
+                                             reservedPlaces={this.getTotalReservedPlaces()}
+                                             manualStudentCount={this.getTotalManualAffectations()}/>
                                 </Col>
                             </Row>
                             <hr/>
