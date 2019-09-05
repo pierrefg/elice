@@ -1,5 +1,7 @@
 # Elice
 
+![elice_logo](https://raw.githubusercontent.com/PierreFG/elice/master/src/img/text_logo.png)
+
 ## The team
 
 This project was born in INSA Lyon after a school request. The developper team :
