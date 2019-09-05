@@ -3,7 +3,7 @@
 ## The team
 
 This project was born in INSA Lyon after a school request. The developper team :
-* CHALLAL Mohamed, 
+* CHALLAL Mohamed
 * DU Paul
 * FAURE--GIOVAGNOLI Pierre
 * LE CONTE Alexis
