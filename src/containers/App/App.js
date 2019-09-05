@@ -168,9 +168,7 @@ class App extends Component {
         let key = e.target.id;
         let state = {...this.state};
 
-        if (value === -1) {
-            state = this.deletedAppealNum(state, key);
-        } else {
+        if (value !== -1) {
             for (let el of state.columns.keys()) {
                 if (state.columns.get(el).appealNum === value) {
                     state.columns.set(el, {...state.columns.get(el), appealNum: state.columns.get(key).appealNum});
