@@ -1,5 +1,3 @@
-# Elice
-
 ![elice_logo](https://raw.githubusercontent.com/PierreFG/elice/master/src/img/text_logo.png)
 
 ## The team
