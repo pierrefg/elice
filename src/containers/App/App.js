@@ -317,29 +317,45 @@ class App extends Component {
         return Array.from(this.state.courses.values()).reduce((acc, course) => acc + course.minPlaces, 0);
     }
 
+    getAutoMinPlaces() {
+        return Array.from(this.state.courses.keys()).reduce(
+            (acc, name) => {
+                let course = this.state.courses.get(name);
+                return acc + Math.max(0, course.minPlaces - course.reservedPlaces - this.countManualAffectation(name))
+            }, 0);
+    }
+
     getTotalMaxPlaces() {
         return Array.from(this.state.courses.values()).reduce((acc, course) => acc + course.maxPlaces, 0);
+    }
+
+    getAutoMaxPlaces() {
+        return Array.from(this.state.courses.keys()).reduce(
+            (acc, name) => {
+                let course = this.state.courses.get(name);
+                return acc + Math.max(0, course.maxPlaces - course.reservedPlaces - this.countManualAffectation(name))
+            }, 0);
     }
 
     getTotalReservedPlaces() {
         return Array.from(this.state.courses.values()).reduce((acc, course) => acc + course.reservedPlaces, 0);
     }
 
-    getCourseMinPlaces() {
+    getCourseUnreservedMinPlaces() {
         let places = [];
         let courseId = 0;
         for (let [, course] of this.state.courses) {
-            places[courseId++] = course.minPlaces - course.reservedPlaces;
+            places[courseId++] = Math.max(0, course.minPlaces - course.reservedPlaces);
         }
 
         return places;
     }
 
-    getCourseMaxPlaces() {
+    getCourseUnreservedMaxPlaces() {
         let places = [];
         let courseId = 0;
         for (let [, course] of this.state.courses) {
-            places[courseId++] = course.maxPlaces - course.reservedPlaces;
+            places[courseId++] = Math.max(0, course.maxPlaces - course.reservedPlaces);
         }
 
         return places;
@@ -355,10 +371,9 @@ class App extends Component {
     affect(useAppeal) {
         let manualStudentCount = this.getTotalManualAffectations();
         let autoStudentCount = this.state.students.length - manualStudentCount;
-        let reservedPlaces = this.getTotalReservedPlaces() + manualStudentCount;
-        if (this.getTotalMinPlaces() - reservedPlaces > autoStudentCount)
+        if (this.getAutoMinPlaces() > autoStudentCount)
             this.showError("Il n'y a pas assez d'étudiants pour remplir toutes les places minimales en affectation automatique.");
-        else if (autoStudentCount > this.getTotalMaxPlaces() - reservedPlaces)
+        else if (autoStudentCount > this.getAutoMaxPlaces())
             this.showError("Il n'y a pas assez de places au maximum pour tous les étudiants en affectation automatique.");
         else {
             if (useAppeal) {
@@ -396,8 +411,8 @@ class App extends Component {
         // tandis que wishMatrixAuto et interestMatrixAuto ont pour clés des ids randomisés
 
         let wishMatrix = this.getStudentsWishMatrix();
-        let minPlaces = this.getCourseMinPlaces();
-        let maxPlaces = this.getCourseMaxPlaces();
+        let minPlaces = this.getCourseUnreservedMinPlaces();
+        let maxPlaces = this.getCourseUnreservedMaxPlaces();
         let penalties = this.computePenalties(this.state.courses.size);
         let interestMatrix = undefined;
 
@@ -415,14 +430,14 @@ class App extends Component {
         let courseNames = Array.from(this.state.courses.keys());
 
         // On décompte les étudiants qui sont affectés manuellement
-        let minPlacesAuto = courseNames.map((courseName, index) => minPlaces[index] - this.countManualAffectation(courseName));
-        let maxPlacesAuto = courseNames.map((courseName, index) => maxPlaces[index] - this.countManualAffectation(courseName));
+        let autoMinPlaces = courseNames.map((courseName, index) => Math.max(0, minPlaces[index] - this.countManualAffectation(courseName)));
+        let autoMaxPlaces = courseNames.map((courseName, index) => Math.max(0, maxPlaces[index] - this.countManualAffectation(courseName)));
 
         let assignmentsAuto = undefined;
 
         try {
             // On lance l'algorithme sur tous ceux qui doivent être affectés automatiquement
-            assignmentsAuto = MunkresApp.process(penalties, minPlacesAuto, maxPlacesAuto, wishMatrixAuto, interestMatrixAuto);
+            assignmentsAuto = MunkresApp.process(penalties, autoMinPlaces, autoMaxPlaces, wishMatrixAuto, interestMatrixAuto);
         } catch (e) {
             // S'il y a une erreur
             let students = [...this.state.students];
@@ -505,6 +520,9 @@ class App extends Component {
             }
 
             if (course.maxPlaces < count) {
+                this.showError("Il n'y a pas assez de place dans le cours « " + courseName + " » pour cette affectation manuelle.\n" +
+                    "Une place a donc été rajoutée automatiquement.");
+
                 let courses = new Map(this.state.courses);
                 courses.set(courseName, {...course, maxPlaces: count});
                 this.setState({courses: courses});
@@ -571,6 +589,8 @@ class App extends Component {
                                              minPlaces={this.getTotalMinPlaces()}
                                              maxPlaces={this.getTotalMaxPlaces()}
                                              reservedPlaces={this.getTotalReservedPlaces()}
+                                             autoMinPlaces={this.getAutoMinPlaces()}
+                                             autoMaxPlaces={this.getAutoMaxPlaces()}
                                              manualStudentCount={this.getTotalManualAffectations()}/>
                                 </Col>
                             </Row>
