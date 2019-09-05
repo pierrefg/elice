@@ -23,13 +23,19 @@ class dataHandler {
                 let lowercaseName = name.toLowerCase();
                 let state = "discard";  //information/discard(will not be used)/wish/appeal
                 let wishNum = -1;
-                if (lowercaseName.includes("voeux") || lowercaseName.includes("vœux")) {
+                if (lowercaseName.includes("voeu") || lowercaseName.includes("vœu")) {
                     state = "wish";
                     wishNum = wishCount++;
                 }
-                else if (lowercaseName.includes("attrait"))
+                else if (lowercaseName.includes("attrait") || lowercaseName.includes("interet") || lowercaseName.includes("intérêt"))
                     state = "appeal";
-                else if (lowercaseName.includes("nom") || lowercaseName.includes("adresse") || lowercaseName.includes("mail"))
+                else if (lowercaseName.includes("nom") ||
+                         lowercaseName.includes("adresse") ||
+                         lowercaseName.includes("address") ||
+                         lowercaseName.includes("mail") ||
+                         lowercaseName.includes("courriel") ||
+                         lowercaseName.includes("groupe") ||
+                         lowercaseName.includes("classe"))
                     state = "information";
 
                 columns.set(name, {

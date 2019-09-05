@@ -7,6 +7,10 @@ import "./summary.css"
 
 class Summary extends Component {
     render() {
+        let autoStudentCount = this.props.studentCount - this.props.manualStudentCount;
+        let autoMinPlaces = this.props.minPlaces - this.props.reservedPlaces - this.props.manualStudentCount;
+        let autoMaxPlaces = this.props.maxPlaces - this.props.reservedPlaces - this.props.manualStudentCount;
+
         return (
             <div>
                 <h2>3. Récapitulatif</h2>
@@ -40,15 +44,19 @@ class Summary extends Component {
                             <tbody>
                             <tr>
                                 <td>Étudiants pour affect. auto. : </td>
-                                <td>{this.props.studentCount - this.props.manualStudentCount}</td>
+                                <td>{autoStudentCount}</td>
                             </tr>
                             <tr>
                                 <td>Places min. pour affect. auto. : </td>
-                                <td>{this.props.minPlaces - this.props.reservedPlaces - this.props.manualStudentCount}</td>
+                                <td className={autoMinPlaces > autoStudentCount ? "text-danger" : "text-success"}>
+                                    {autoMinPlaces}
+                                </td>
                             </tr>
                             <tr>
                                 <td>Places max. pour affect. auto. : </td>
-                                <td>{this.props.maxPlaces - this.props.reservedPlaces - this.props.manualStudentCount}</td>
+                                <td className={autoStudentCount > autoMaxPlaces ? "text-danger" : "text-success"}>
+                                    {autoMaxPlaces}
+                                </td>
                             </tr>
                             <tr>
                                 <td>Étudiants en affect. manuelle : </td>
