@@ -70,7 +70,11 @@ class Affectations extends Component {
                                     condensed
                                     noDataIndication="Pas de données"
                                     pagination={paginationFactory({sizePerPage: 10, hideSizePerPage: false})}
-                                    cellEdit={cellEditFactory({mode: 'click', blurToSave: true})}
+                                    cellEdit={cellEditFactory({
+                                        mode: 'click',
+                                        blurToSave: true,
+                                        afterSaveCell: (oldValue, newValue, row, column) => { this.props.editRow(row); }
+                                    })}
                                     {...props.baseProps}
                                 />
                             </div>

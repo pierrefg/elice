@@ -202,8 +202,7 @@ class App extends Component {
                 break;
             case "max":
                 courses.set(name, {...course,
-                                   maxPlaces: Math.max(course.minPlaces, value),
-                                   reservedPlaces: Math.min(course.reservedPlaces, course.maxPlaces)});
+                                   maxPlaces: Math.max(Math.max(course.reservedPlaces + this.countManualAffectation(name), course.minPlaces), value)});
                 break;
             case "reserved":
                 courses.set(name, {...course, reservedPlaces: Math.min(value, course.maxPlaces)});
@@ -493,6 +492,29 @@ class App extends Component {
         this.setState({errorShown: false});
     }
 
+    editRow(row) {
+        let students = [...this.state.students];
+        students[row.id] = row;
+        if (row.affectationMode !== "Automatique") {
+            let courseName = row.affectationMode;
+            let course = this.state.courses.get(courseName);
+            let count = course.reservedPlaces;
+            for (let studentId in students) {
+                if (this.state.students[studentId].affectationMode === courseName)
+                    count++;
+            }
+
+            if (course.maxPlaces < count) {
+                let courses = new Map(this.state.courses);
+                courses.set(courseName, {...course, maxPlaces: count});
+                this.setState({courses: courses});
+            }
+
+        }
+
+        this.setState({students: students});
+    }
+
     render() {
         return (
             <>
@@ -558,7 +580,8 @@ class App extends Component {
                                           isAffecting={this.state.isAffecting}
                                           seed={this.state.seed}
                                           affect={this.affect.bind(this)}
-                                          changeSeed={this.changeSeed.bind(this)}/>
+                                          changeSeed={this.changeSeed.bind(this)}
+                                          editRow={this.editRow.bind(this)}/>
                             {
                                 this.state.statistics &&
                                 <>
