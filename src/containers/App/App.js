@@ -18,23 +18,27 @@ import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 
 import fileDownload from 'js-file-download';
+import seedRandom from 'seedrandom';
 
 // https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
 
-function shuffleArray(array) {
+function shuffleArray(array, seed) {
+    let rng = seedRandom(seed);
     for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
+        const j = Math.floor(rng() * (i + 1));
         [array[i], array[j]] = [array[j], array[i]];
     }
 }
 
-function shuffleArray2(array1, array2) {
+function shuffleArray2(array1, array2, seed) {
     if (array1.length !== array2.length) {
         throw Error("array1.length !== array2.length")
     }
 
+    let rng = seedRandom(seed);
+
     for (let i = array1.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
+        const j = Math.floor(rng() * (i + 1));
         [array1[i], array1[j]] = [array1[j], array1[i]];
         [array2[i], array2[j]] = [array2[j], array2[i]];
     }
@@ -50,6 +54,7 @@ class App extends Component {
             courses: new Map(),
             students: [],
             rtColumns: [{dataField: 'id', text: 'Vide'}],
+            seed: "seed",
             statistics: null,
             isAffecting: false,
             errorShown: false,
@@ -208,6 +213,16 @@ class App extends Component {
         }
 
         this.setState({courses: courses});
+    }
+
+    changeSeed(e) {
+        let name = e.target.name;
+        let value = e.target.value;
+
+        if (name === "seed")
+            this.setState({seed: value});
+        else if (name === "random_seed")
+            this.setState({seed: Math.random().toString(36).substring(2)});
     }
 
     getStudentsWishMatrix() {
@@ -393,9 +408,9 @@ class App extends Component {
         if (useAppeal) {
             interestMatrix = this.getStudentsInterestMatrix();
             interestMatrixAuto = interestMatrix.filter(listMatrix => this.state.students[listMatrix.studentId].affectationMode === "Automatique");
-            shuffleArray2(wishMatrixAuto, interestMatrixAuto);
+            shuffleArray2(wishMatrixAuto, interestMatrixAuto, this.state.seed);
         } else {
-            shuffleArray(wishMatrixAuto);
+            shuffleArray(wishMatrixAuto, this.state.seed);
         }
 
         let courseNames = Array.from(this.state.courses.keys());
@@ -541,7 +556,9 @@ class App extends Component {
                             <Affectations students={this.state.students}
                                           rtColumns={this.state.rtColumns}
                                           isAffecting={this.state.isAffecting}
-                                          affect={this.affect.bind(this)}/>
+                                          seed={this.state.seed}
+                                          affect={this.affect.bind(this)}
+                                          changeSeed={this.changeSeed.bind(this)}/>
                             {
                                 this.state.statistics &&
                                 <>
